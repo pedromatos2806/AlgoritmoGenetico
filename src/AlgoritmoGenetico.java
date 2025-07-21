@@ -81,8 +81,10 @@ public class AlgoritmoGenetico {
             
             // Mostrar progresso
             if (geracao % 20 == 0 || geracao == GERACOES - 1) {
-                System.out.printf("Geração %3d - Melhor fitness: %.2f\n", 
-                    geracao, populacao.get(0).getFitness());
+                double melhorFitness = populacao.get(0).getFitness();
+                double piorFitness = populacao.get(populacao.size() - 1).getFitness();
+                System.out.printf("Geração %3d - Melhor fitness: %.2f | Pior fitness: %.2f\n", 
+                    geracao, melhorFitness, piorFitness);
             }
             
             // Criar nova população
@@ -240,31 +242,45 @@ public class AlgoritmoGenetico {
     }
     
     static double calcularFitnessCromossomo(Cromossomo cromossomo) {
-        double fitness = 100.0; // Começa com 100 pontos
+        // Fitness normalizado para variar entre 0 e 1
         
-        // PENALIDADES
+        // 1. QUALIDADE DE ALOJAMENTO (40% do fitness)
+        // Baseado na proporção de disciplinas alocadas
+        double qualidadeAlojamento = (double) cromossomo.getAulas().size() / NUM_DISCIPLINAS;
         
-        // 1. Conflitos de horário (professor ou sala ocupados)
+        // 2. QUALIDADE DE DISTRIBUIÇÃO (30% do fitness)
+        // Baseado na distribuição uniforme pelos horários
+        Set<Integer> horariosUsados = new HashSet<>();
+        for (Aula aula : cromossomo.getAulas()) {
+            horariosUsados.add(aula.getHorario());
+        }
+        double qualidadeDistribuicao = (double) horariosUsados.size() / NUM_HORARIOS;
+        
+        // 3. PENALIZAÇÕES (30% do fitness - subtraído)
+        int conflitosTotal = 0;
+        int maxConflitos = NUM_DISCIPLINAS * 3; // Estimativa máxima de conflitos possíveis
+        
+        // 3.1. Conflitos de horário (professor ou sala ocupados)
         Set<String> ocupados = new HashSet<>();
         for (Aula aula : cromossomo.getAulas()) {
             String chaveProf = "P" + aula.getProfessor() + "H" + aula.getHorario();
             String chaveSala = "S" + aula.getSala() + "H" + aula.getHorario();
             
-            if (ocupados.contains(chaveProf)) fitness -= 20; // Professor ocupado
-            if (ocupados.contains(chaveSala)) fitness -= 15; // Sala ocupada
+            if (ocupados.contains(chaveProf)) conflitosTotal += 3; // Professor ocupado
+            if (ocupados.contains(chaveSala)) conflitosTotal += 2; // Sala ocupada
             
             ocupados.add(chaveProf);
             ocupados.add(chaveSala);
         }
         
-        // 2. Professor indisponível
+        // 3.2. Professor indisponível
         for (Aula aula : cromossomo.getAulas()) {
             if (!disponibilidadeProfessor[aula.getProfessor()][aula.getHorario()]) {
-                fitness -= 25;
+                conflitosTotal += 4;
             }
         }
         
-        // 3. Conflitos de alunos (aluno com 2 aulas no mesmo horário)
+        // 3.3. Conflitos de alunos (aluno com 2 aulas no mesmo horário)
         Map<Integer, Set<Integer>> aulasPorHorario = new HashMap<>();
         for (Aula aula : cromossomo.getAulas()) {
             aulasPorHorario.computeIfAbsent(aula.getHorario(), k -> new HashSet<>()).add(aula.getDisciplina());
@@ -278,26 +294,20 @@ public class AlgoritmoGenetico {
                         if (d1 < d2) {
                             Set<Integer> comum = new HashSet<>(alunosPorDisciplina.get(d1));
                             comum.retainAll(alunosPorDisciplina.get(d2));
-                            fitness -= comum.size() * 0.5; // 0.5 pontos por aluno em conflito
+                            conflitosTotal += comum.size(); // 1 ponto por aluno em conflito
                         }
                     }
                 }
             }
         }
         
-        // BONIFICAÇÕES
+        // Normalizar penalizações
+        double penalizacaoConflitos = Math.min(1.0, (double) conflitosTotal / maxConflitos);
         
-        // 1. Disciplinas alocadas (quanto mais, melhor)
-        fitness += cromossomo.getAulas().size() * 2;
+        // CÁLCULO FINAL DO FITNESS (0 a 1)
+        double fitness = (qualidadeAlojamento * 0.4) + (qualidadeDistribuicao * 0.3) + ((1.0 - penalizacaoConflitos) * 0.3);
         
-        // 2. Distribuição uniforme pelos horários
-        Set<Integer> horariosUsados = new HashSet<>();
-        for (Aula aula : cromossomo.getAulas()) {
-            horariosUsados.add(aula.getHorario());
-        }
-        fitness += horariosUsados.size() * 0.5;
-        
-        return Math.max(fitness, 0);
+        return Math.max(0.0, Math.min(1.0, fitness));
     }
     
     // ========== OPERADORES GENÉTICOS ==========

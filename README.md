@@ -1,388 +1,306 @@
-# 🧬 Algoritmo Genético - Agendamento Universitário
+# 🧬 Algoritmo Genético para Agendamento Universitário
 
-## 🎯 **O Problema**
+## 📋 Visão Geral
 
-Este projeto resolve o **problema de agendamento universitário**, uma tarefa computacionalmente complexa que envolve:
+Este projeto implementa um **Algoritmo Genético** para resolver o problema de agendamento universitário, criando cronogramas otimizados que alocam disciplinas, professores, salas e horários de forma eficiente.
 
-- **15 disciplinas** que precisam ser alocadas
-- **6 professores** com especialidades específicas
-- **4 salas** de aula disponíveis
-- **20 horários** semanais (Segunda a Quinta, 5 horários/dia)
-- **100 alunos** matriculados em múltiplas disciplinas
+## 🎯 O que é um Algoritmo Genético?
 
-### **Desafios:**
+Um **Algoritmo Genético** é uma técnica de otimização inspirada na evolução natural que utiliza conceitos como seleção, cruzamento e mutação para encontrar soluções ótimas ou próximas do ótimo para problemas complexos.
 
-- ❌ **Conflitos de professor:** Um professor não pode estar em dois lugares ao mesmo tempo
-- ❌ **Conflitos de sala:** Uma sala não pode ter duas aulas simultâneas
-- ❌ **Conflitos de alunos:** Alunos não podem ter aulas conflitantes
-- ❌ **Restrições de especialidade:** Professores só podem lecionar disciplinas de sua área
-- ❌ **Disponibilidade:** Professores têm horários preferenciais
+### 🔬 Conceitos Fundamentais
 
----
+#### 1. **População**
+- Conjunto de **cromossomos** (soluções candidatas)
+- Cada cromossomo representa um cronograma completo
+- Tamanho típico: 200-500 indivíduos
 
-## 🧬 **Por Que É Um Algoritmo Genético?**
+#### 2. **Cromossomo** 
+- Representa uma solução completa do problema
+- Contém uma lista de **aulas** com suas alocações
+- Cada cromossomo tem um **fitness** (qualidade da solução)
 
-Este algoritmo é **genético** porque segue os princípios da **evolução biológica**:
+#### 3. **Gene**
+- Unidade básica de informação
+- No nosso caso: uma **aula** específica
+- Contém: disciplina, professor, sala e horário
 
-### **1. População de Soluções**
+#### 4. **Fitness (Aptidão)**
+- Medida da qualidade de uma solução (0.0 a 1.0)
+- **40%** - Qualidade de Alojamento (disciplinas alocadas)
+- **30%** - Qualidade de Distribuição (uso equilibrado de horários)
+- **30%** - Ausência de Conflitos (penalizações por problemas)
 
-```
-30 cronogramas diferentes evoluindo simultaneamente
-(não apenas uma solução sendo melhorada)
-```
+#### 5. **Seleção**
+- Escolha dos melhores cromossomos para reprodução
+- Método usado: **Seleção por Torneio**
+- Favorece soluções com maior fitness
 
-### **2. Representação Cromossômica**
+#### 6. **Cruzamento (Crossover)**
+- Combinação de dois cromossomos pais
+- Gera novos cromossomos filhos
+- Taxa típica: 85%
 
-```
-Cada cronograma = Cromossomo
-Cada aula = Gene
-Cada parâmetro da aula = Alelo
-```
+#### 7. **Mutação**
+- Alteração aleatória em genes
+- Mantém diversidade genética
+- Taxa típica: 5%
 
-### **3. Operadores Evolutivos**
+#### 8. **Elitismo**
+- Preservação dos melhores cromossomos
+- Garante que boas soluções não sejam perdidas
+- Percentual típico: 10% da população
 
-```
-SELEÇÃO → Melhores cronogramas têm mais chance de "reproduzir"
-CRUZAMENTO → Combina características de 2 cronogramas "pais"
-MUTAÇÃO → Alterações aleatórias para manter diversidade
-ELITISMO → Preserva os melhores cronogramas
-```
+## 🏗️ Arquitetura do Sistema
 
-### **4. Evolução Por Gerações**
+### 📁 Classes Fundamentais
 
-```
-Geração 0 → Geração 1 → Geração 2 → ... → Geração 99
-Qualidade média melhora ao longo do tempo
-```
-
-### **5. Fitness (Aptidão)**
-
-```
-Cada cronograma recebe uma "nota" baseada em:
-- Quantas disciplinas conseguiu alocar
-- Quantos conflitos tem
-- Quão bem distribuído está
-```
-
----
-
-## 📚 **Documentação das Classes**
-
-### **1. `AlgoritmoGenetico.java` - Classe Principal**
-
-**O que faz:** Coordena todo o processo evolutivo
-
-**Principais métodos:**
-
+#### 1. **`Aula.java`** - Gene do Sistema
 ```java
-main() → Executa o algoritmo completo
-gerarPopulacaoInicial() → Cria 30 cronogramas aleatórios
-calcularFitness() → Avalia qualidade de cada cronograma
-selecionarPai() → Escolhe cronogramas para reprodução
-cruzar() → Combina dois cronogramas pais
-mutar() → Faz alterações aleatórias
-```
-
-**Por que é importante:** É o "motor evolutivo" que simula a seleção natural
-
-### **2. `Cromossomo.java` - Solução Completa**
-
-**O que representa:** Um cronograma universitário completo
-
-**Estrutura:**
-
-```java
-class Cromossomo {
-    List<Aula> aulas;    // Lista de todas as aulas alocadas
-    double fitness;      // Qualidade desta solução (0-150)
-}
-```
-
-**Analogia biológica:**
-
-```
-Organismo vivo = Cromossomo (cronograma)
-DNA = Lista de aulas
-Aptidão = Fitness (quão bem sobrevive no ambiente)
-```
-
-**Por que é importante:** Representa uma solução candidata que pode evoluir
-
-### **3. `Aula.java` - Gene Individual**
-
-**O que representa:** Uma única aula alocada
-
-**Estrutura:**
-
-```java
+// Representa uma aula específica (gene)
 class Aula {
-    int disciplina;  // Qual disciplina (0-14)
-    int professor;   // Qual professor (0-5)
-    int sala;        // Qual sala (0-3)
-    int horario;     // Qual horário (0-19)
+    int disciplina;  // ID da disciplina
+    int professor;   // ID do professor
+    int sala;        // ID da sala
+    int horario;     // ID do horário
 }
 ```
+**Função**: Unidade básica de informação - representa a alocação de uma disciplina específica.
 
-**Analogia biológica:**
-
+#### 2. **`Cromossomo.java`** - Solução Candidata
+```java
+// Representa uma solução completa (cromossomo)
+class Cromossomo {
+    List<Aula> aulas;    // Lista de todas as aulas
+    double fitness;      // Qualidade da solução
+}
 ```
-Gene = Aula individual
-Alelos = Valores específicos (disciplina=5, professor=2, etc.)
-Expressão do gene = Aula concreta no cronograma
+**Função**: Contém um cronograma completo e sua avaliação de qualidade.
+
+#### 3. **`AlgoritmoGenetico.java`** - Versão Educacional
+- **Propósito**: Demonstração acadêmica (15 disciplinas)
+- **Características**: Código simples e didático
+- **População**: 200 cromossomos
+- **Gerações**: 100 iterações
+
+#### 4. **`AlgoritmoGeneticoCemDisciplinas.java`** - Versão Escalável
+- **Propósito**: Universidades médias (150+ disciplinas)
+- **Características**: Paralelização, cache de fitness
+- **População**: 500 cromossomos
+- **Gerações**: 200 iterações
+- **Otimizações**: ExecutorService, CompletableFuture
+
+#### 5. **`AlgoritmoGeneticoQuinhentas.java`** - Versão Ultra Escalável
+- **Propósito**: Grandes universidades (500+ disciplinas)
+- **Características**: ForkJoinPool, fitness por amostragem
+- **População**: 1000 cromossomos
+- **Gerações**: 300 iterações
+- **Otimizações**: Heurísticas inteligentes, paralelização massiva
+
+## 🔄 Funcionamento Passo a Passo
+
+### **Etapa 1: Inicialização**
+```
+1. Definir parâmetros do problema
+   - Número de disciplinas, professores, salas, horários
+   - Disponibilidade dos professores
+   - Capacidade das salas
+   - Alunos por disciplina
+
+2. Criar estruturas de dados
+   - Arrays de disponibilidade
+   - Mapas de relacionamentos
+   - Configurações de restrições
 ```
 
-**Por que é importante:** É a unidade básica de informação genética que pode ser herdada e mutada
-
-### **4. `TesteSimples.java` - Verificação**
-
-**O que faz:** Testa se o ambiente Java está funcionando
-
-**Por que é importante:** Garante que o projeto pode ser executado antes de rodar o algoritmo principal
-
----
-
-## 🔄 **Como o Algoritmo Resolve o Problema**
-
-### **Passo 1: Inicialização**
-
+### **Etapa 2: Geração da População Inicial**
 ```
-1. Define dados do problema (disciplinas, professores, salas, horários)
-2. Gera 30 cronogramas aleatórios (população inicial)
-3. Calcula fitness de cada cronograma
+1. Para cada cromossomo na população:
+   2. Para cada disciplina:
+      3. Escolher professor aleatório (que pode lecionar)
+      4. Escolher sala aleatória (com capacidade adequada)
+      5. Escolher horário aleatório (professor disponível)
+      6. Criar aula e adicionar ao cromossomo
+   7. Calcular fitness do cromossomo
 ```
 
-### **Passo 2: Evolução (100 gerações)**
+### **Etapa 3: Cálculo do Fitness**
+```
+Para cada cromossomo:
 
+1. QUALIDADE DE ALOJAMENTO (40%)
+   - Contar disciplinas alocadas
+   - Calcular: disciplinas_alocadas / total_disciplinas
+
+2. QUALIDADE DE DISTRIBUIÇÃO (30%)
+   - Contar horários únicos utilizados
+   - Calcular: horarios_unicos / total_horarios
+
+3. PENALIZAÇÕES (30%)
+   - Conflitos de professor (mesmo horário)
+   - Conflitos de sala (superlotação)
+   - Professor indisponível
+   - Disciplina sem professor adequado
+   - Calcular: 1.0 - (conflitos / max_conflitos)
+
+4. FITNESS FINAL
+   - fitness = (alojamento × 0.4) + (distribuição × 0.3) + (penalizações × 0.3)
+   - Normalizar entre 0.0 e 1.0
+```
+
+### **Etapa 4: Evolução (Loop Principal)**
 ```
 Para cada geração:
-├── 1. Avalia fitness de todos os cronogramas
-├── 2. Ordena por qualidade (melhor primeiro)
-├── 3. Mantém os 3 melhores (elitismo)
-├── 4. Gera nova população:
-│   ├── Seleciona "pais" por torneio
-│   ├── Cruza pais para gerar "filhos"
-│   ├── Muta alguns filhos aleatoriamente
-│   └── Substitui população antiga
-└── 5. Repete até convergir
+
+1. AVALIAÇÃO
+   - Calcular fitness de todos os cromossomos
+   - Ordenar população por fitness (melhor → pior)
+
+2. SELEÇÃO
+   - Implementar seleção por torneio
+   - Escolher pais com maior probabilidade para melhores fitness
+
+3. REPRODUÇÃO
+   - Aplicar elitismo (manter 10% melhores)
+   - Cruzamento: combinar pais para gerar filhos
+   - Mutação: alterar genes aleatoriamente
+
+4. SUBSTITUIÇÃO
+   - Nova população substitui a anterior
+   - Manter tamanho populacional constante
+
+5. CRITÉRIO DE PARADA
+   - Número máximo de gerações atingido
+   - Fitness desejado alcançado
+   - Convergência da população
 ```
 
-### **Passo 3: Resultado**
-
+### **Etapa 5: Resultado Final**
 ```
-1. Seleciona o melhor cronograma da última geração
-2. Exibe cronograma otimizado
-3. Salva resultado em arquivo
-```
+1. Selecionar melhor cromossomo da última geração
+2. Verificar qualidade da solução:
+   - Fitness > 0.85: Excelente
+   - Fitness > 0.65: Aceitável
+   - Fitness < 0.65: Necessita ajustes
 
----
-
-## 📊 **Função de Fitness (Como Avalia Qualidade)**
-
-Cada cronograma recebe uma pontuação baseada em:
-
-### **Base Inicial:**
-
-```
-+100 pontos → Valor base inicial
+3. Gerar cronograma formatado
+4. Salvar em arquivo
+5. Apresentar estatísticas
 ```
 
-### **Bonificações (+pontos):**
+## ⚙️ Operadores Genéticos Detalhados
 
-```
-+2 pontos → Por cada disciplina alocada (máximo +30)
-+0.5 pontos → Por cada horário utilizado (máximo +10)
-```
-
-### **Penalizações (-pontos):**
-
-```
--20 pontos → Por conflito de professor
--15 pontos → Por conflito de sala
--25 pontos → Por professor indisponível
--0.5 pontos → Por cada aluno em conflito
-```
-
-### **Range de Fitness:**
-
-#### **💯 MÁXIMO TEÓRICO: ~140 pontos**
-
-```
-Base inicial:           +100.00
-15 disciplinas:         + 30.00  (15 × 2)
-20 horários usados:     + 10.00  (20 × 0.5)
-Sem conflitos:          +  0.00
-
-TOTAL MÁXIMO:           140.00
+### 🎯 **Seleção por Torneio**
+```java
+// Seleciona melhor cromossomo de um grupo aleatório
+Cromossomo selecionarPai(List<Cromossomo> populacao) {
+    Cromossomo melhor = cromossomo_aleatorio();
+    for (i = 0; i < tamanho_torneio; i++) {
+        Cromossomo candidato = cromossomo_aleatorio();
+        if (candidato.fitness > melhor.fitness) {
+            melhor = candidato;
+        }
+    }
+    return melhor;
+}
 ```
 
-#### **❌ MÍNIMO TEÓRICO: 0 pontos**
-
-```
-(Fitness nunca fica negativo - limitado a 0)
-
-Cenário extremo:
-Base:                   +100.00
-Nenhuma disciplina:     +  0.00
-Muitos conflitos:       -150.00+
-→ Resultado limitado a 0.00
-```
-
-#### **📊 RANGES TÍPICOS OBSERVADOS:**
-
-```
-🔴 RUIM (50-90):      Muitos conflitos, poucas disciplinas
-🟡 REGULAR (90-120):  Algumas disciplinas, conflitos moderados
-🟢 BOM (120-135):     Maioria disciplinas, poucos conflitos
-🏆 EXCELENTE (135+):  Todas disciplinas, conflitos mínimos
+### 🧬 **Cruzamento (Crossover)**
+```java
+// Combina dois pais para gerar filho
+Cromossomo cruzar(Cromossomo pai, Cromossomo mae) {
+    Cromossomo filho = new Cromossomo();
+    
+    for (cada aula) {
+        if (random() < 0.5) {
+            filho.adicionar(pai.getAula(i));
+        } else {
+            filho.adicionar(mae.getAula(i));
+        }
+    }
+    
+    return filho;
+}
 ```
 
-### **Exemplo de Cálculo:**
-
-```
-Cronograma com 15 disciplinas, alguns conflitos:
-
-Base:                     +100.00
-Disciplinas alocadas:     + 30.00  (15 × 2)
-Horários utilizados:      + 10.00  (20 × 0.5)
-Conflitos professor:      - 40.00  (2 × 20)
-Conflitos sala:           - 15.00  (1 × 15)
-Professor indisponível:   - 25.00  (1 × 25)
-Conflitos alunos:         - 10.00  (20 × 0.5)
-
-FITNESS FINAL:            50.00
+### 🔀 **Mutação**
+```java
+// Altera genes aleatoriamente
+void mutar(Cromossomo cromossomo) {
+    for (cada aula in cromossomo) {
+        if (random() < taxa_mutacao) {
+            // Alterar professor, sala ou horário aleatoriamente
+            aula.modificarAleatorio();
+        }
+    }
+}
 ```
 
----
+## 📊 Métricas de Qualidade
 
-## 🎯 **Vantagens do Algoritmo Genético**
+### **Interpretação do Fitness:**
+- **0.90 - 1.00**: Solução excelente (quase perfeita)
+- **0.80 - 0.89**: Solução muito boa (poucos conflitos)
+- **0.70 - 0.79**: Solução boa (conflitos aceitáveis)
+- **0.60 - 0.69**: Solução razoável (necessita melhorias)
+- **0.00 - 0.59**: Solução inadequada (muitos problemas)
 
-### **1. Robustez**
+### **Componentes do Fitness:**
+1. **Alojamento (40%)**: Maximizar disciplinas alocadas
+2. **Distribuição (30%)**: Equilibrar uso de horários
+3. **Conflitos (30%)**: Minimizar violações de restrições
 
-- Funciona mesmo com dados imperfeitos
-- Não fica "preso" em soluções ruins
-- Adapta-se a mudanças nos dados
+## 🚀 Como Executar
 
-### **2. Qualidade das Soluções**
-
-- Encontra soluções muito boas rapidamente
-- Equilibra múltiplos objetivos simultâneos
-- Evita ótimos locais através da população
-
-### **3. Flexibilidade**
-
-- Fácil adicionar novas restrições
-- Parâmetros ajustáveis para diferentes problemas
-- Pode ser paralelizado naturalmente
-
-### **4. Inspiração Natural**
-
-- Usa princípios evolutivos testados por milhões de anos
-- Comportamento emergente (soluções surgem naturalmente)
-- Balança exploração (diversidade) com exploitation (melhoria)
-
----
-
-## 📁 **Estrutura do Projeto**
-
-```
-AlgoritmoGenetico_02/
-├── src/
-│   ├── AlgoritmoGenetico.java ← MOTOR EVOLUTIVO 🧬
-│   ├── Aula.java             ← GENE (unidade básica)
-│   ├── Cromossomo.java       ← ORGANISMO (solução completa)
-│   └── TesteSimples.java     ← VERIFICAÇÃO
-├── bin/                      ← Classes compiladas
-├── .project                  ← Configuração Eclipse
-├── .classpath                ← Configuração Eclipse
-├── .settings/                ← Configuração Eclipse
-├── cronograma_simples.txt    ← RESULTADO final
-├── DOCUMENTACAO_COMPLETA.md  ← Documentação técnica detalhada
-└── README.md                 ← Este arquivo
-```
-
----
-
-## 🚀 **Como Executar**
-
-### **Opção 1: Eclipse IDE**
-
-1. **File** → **Import** → **Existing Projects into Workspace**
-2. Selecione a pasta `AlgoritmoGenetico_02`
-3. Clique direito em `AlgoritmoGenetico.java` → **Run As** → **Java Application**
-
-### **Opção 2: Terminal**
-
+### **Versão Educacional (15 disciplinas):**
 ```bash
-cd AlgoritmoGenetico_02
 javac -d bin src/*.java
 java -cp bin AlgoritmoGenetico
 ```
 
----
-
-## 📊 **Resultado Esperado**
-
+### **Versão Escalável (150+ disciplinas):**
+```bash
+java -cp bin AlgoritmoGeneticoCemDisciplinas
 ```
-🎓 ALGORITMO GENÉTICO PARA AGENDAMENTO UNIVERSITÁRIO
-Universidade: Educação Avançada
-=================================================
-📊 Inicializando dados...
-✓ 15 disciplinas, 6 professores, 4 salas, 20 horários
-🧬 Gerando população inicial...
-✓ 30 cromossomos criados
 
-Geração   0 - Melhor fitness: 133,50
-Geração  20 - Melhor fitness: 137,50
-Geração  40 - Melhor fitness: 137,50
-Geração  60 - Melhor fitness: 137,50
-Geração  80 - Melhor fitness: 137,50
-Geração  99 - Melhor fitness: 137,50
-
-🏆 MELHOR SOLUÇÃO ENCONTRADA:
-Fitness: 137,50
-
-📅 CRONOGRAMA OTIMIZADO:
-========================
-SEGUNDA:
-  08:00: IA (Prof. Santos, Sala 4)
-  10:00: Algoritmos (Prof. Silva, Sala 3)
-  14:00: Administração (Prof. Souza, Sala 2)
-  16:00: Economia (Prof. Souza, Sala 1)
-
-TERÇA:
-  08:00: Física I (Prof. Costa, Sala 2)
-  10:00: Inglês (Prof. Costa, Sala 4)
-  14:00: Cálculo I (Prof. Oliveira, Sala 1)
-  18:00: Banco de Dados (Prof. Silva, Sala 3)
-
-... (cronograma completo)
-
-📊 ESTATÍSTICAS:
-• Disciplinas alocadas: 15/15 (100%)
-• Fitness: 137,50
-• Conflitos: Nenhum grave
-
-💾 Resultado salvo em 'cronograma_simples.txt'
+### **Versão Ultra Escalável (500+ disciplinas):**
+```bash
+java -cp bin AlgoritmoGeneticoQuinhentas
 ```
+
+## 📈 Resultados Esperados
+
+- **Versão Educacional**: Fitness ~0.93, 15/15 disciplinas alocadas
+- **Versão 100+ Disciplinas**: Fitness ~0.89-0.93, 70-85% disciplinas alocadas
+- **Versão 500 Disciplinas**: Fitness ~0.91-0.97, 85-99% disciplinas alocadas
+
+## 💡 Conceitos Avançados Implementados
+
+### **Paralelização**
+- ExecutorService para cálculo paralelo de fitness
+- CompletableFuture para geração paralela de população
+- ForkJoinPool para processamento massivo
+
+### **Otimizações**
+- Cache de fitness para evitar recálculos
+- Fitness por amostragem para grandes populações
+- Heurísticas inteligentes na geração inicial
+
+### **Normalização**
+- Fitness sempre entre 0.0 e 1.0
+- Penalizações proporcionais ao tamanho do problema
+- Componentes balanceados para interpretação clara
+
+## 🎓 Aplicação Acadêmica
+
+Este projeto demonstra os princípios fundamentais dos Algoritmos Genéticos aplicados a um problema real de otimização combinatória, sendo ideal para:
+
+- **Estudo de Metaheurísticas**
+- **Otimização Combinatória**
+- **Programação Paralela**
+- **Sistemas de Agendamento**
+- **Inteligência Artificial**
 
 ---
 
-## ✅ **Verificação de Funcionamento**
-
-Execute `TesteSimples.java` para verificar se tudo está funcionando:
-
-```
-✅ Teste simples funcionando!
-Java version: 22.0.2
-OS: Windows 11
-Projeto: Algoritmo Genético - Agendamento Universitário
-Status: Pronto para executar no Eclipse! 🎉
-```
-
----
-
-## 🎓 **Conclusão**
-
-Este projeto demonstra como **Algoritmos Genéticos** podem resolver problemas complexos de otimização combinatória de forma eficiente e elegante, usando princípios da evolução biológica para encontrar soluções de alta qualidade em espaços de busca imensos.
-
-**O resultado é um cronograma universitário otimizado, gerado automaticamente em segundos, respeitando todas as restrições e minimizando conflitos.** 🎯
+*Desenvolvido para demonstração acadêmica dos conceitos de Algoritmos Genéticos aplicados ao problema de agendamento universitário.*
