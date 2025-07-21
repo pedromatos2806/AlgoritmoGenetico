@@ -56,7 +56,6 @@ public class DadosProblema {
         }
     }
 
-    // Refatoração para reduzir complexidade
     public static Cromossomo gerarCromossomoAleatorio() {
         Cromossomo cromossomo = new Cromossomo();
         for (int i = 0; i < NUM_DISCIPLINAS; i++) {
@@ -84,9 +83,8 @@ public class DadosProblema {
                 }).sum();
 
         double penalizacaoConflitos = Math.min(1.0, (double) conflitosTotal / (NUM_DISCIPLINAS * 3));
-        return Math.clamp(
-                (qualidadeAlojamento * 0.4) + (qualidadeDistribuicao * 0.3) + ((1.0 - penalizacaoConflitos) * 0.3), 0.0,
-                1.0);
+        return Math.max(0.0, Math.min(1.0, 
+                (qualidadeAlojamento * 0.4) + (qualidadeDistribuicao * 0.3) + ((1.0 - penalizacaoConflitos) * 0.3)));
     }
 
     public static Cromossomo cruzar(Cromossomo pai, Cromossomo mae) {
@@ -143,3 +141,4 @@ public class DadosProblema {
         }
     }
 }
+

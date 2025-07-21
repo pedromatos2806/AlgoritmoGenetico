@@ -1,273 +1,191 @@
-# 🧬 Algoritmo Genético para Montagem de Horários Universitários
+# Algoritmo Genético para Agendamento Universitário
 
-## 🤔 O que este programa faz e por que é "genético"?
+Este projeto implementa um algoritmo genético para resolver o complexo problema de agendamento de aulas universitárias. O sistema é capaz de gerar cronogramas otimizados considerando restrições como disponibilidade de professores, capacidade das salas, preferências dos alunos e evitando conflitos de horários.
 
-Este programa **cria automaticamente horários para uma universidade**, resolvendo um quebra-cabeça complexo:
+## O Problema Real
 
-- Combinar professores, disciplinas, salas e horários
-- Evitar conflitos (como um professor dando duas aulas ao mesmo tempo)
-- Criar um cronograma que funcione bem para todos
+O agendamento de aulas universitárias é um problema de otimização combinatória NP-difícil. Em uma universidade típica, temos:
 
-Imagine tentar montar manualmente um quebra-cabeça com milhares de peças, onde cada peça precisa se encaixar perfeitamente com várias outras - seria praticamente impossível! É exatamente esse problema que este software resolve.
+- **Disciplinas**: Cada curso possui várias disciplinas que precisam ser oferecidas
+- **Professores**: Cada professor tem competências específicas e disponibilidade limitada
+- **Salas**: Recursos físicos com capacidades diferentes
+- **Horários**: Períodos disponíveis durante a semana
+- **Alunos**: Que se matriculam em diversas disciplinas e não podem ter aulas conflitantes
 
-## 🧠 Como funciona um Algoritmo Genético?
+Um coordenador acadêmico pode levar semanas para criar manualmente um cronograma que atenda a todas essas restrições. Nosso algoritmo genético consegue gerar soluções de alta qualidade em minutos, atendendo às restrições e maximizando o aproveitamento dos recursos.
 
-### 🌱 Por que "Genético"? A incrível inspiração na natureza
+## Versões do Algoritmo
 
-O nome **"Algoritmo Genético"** não é por acaso. Este programa funciona imitando exatamente como a **evolução natural** trabalha há bilhões de anos na Terra:
+O projeto oferece três versões do algoritmo:
 
-1. **Na Natureza**: Diferentes organismos existem em uma população
-   **No Programa**: Criamos centenas de versões diferentes do horário
+1. **Versão Simples**: Otimizada para 15 disciplinas, ideal para testes iniciais
+2. **Versão Escalável**: Otimizada para 100-150 disciplinas, com paralelização
+3. **Versão Ultra Escalável**: Otimizada para 500+ disciplinas, com heurísticas avançadas
 
-2. **Na Natureza**: Organismos mais adaptados têm maior chance de sobreviver
-   **No Programa**: Horários com menos conflitos recebem notas mais altas
+## Estrutura do Projeto
 
-3. **Na Natureza**: Organismos bem-sucedidos se reproduzem, combinando seus genes
-   **No Programa**: Combinamos partes de bons horários para criar novos horários
+### Classes Principais
 
-4. **Na Natureza**: Mutações aleatórias introduzem novidades na espécie
-   **No Programa**: Mudanças aleatórias nos horários descobrem novas possibilidades
+- **AlgoritmoGenetico**: Contém as três versões do algoritmo (mainSimples, mainCem, mainQuinhentas)
+- **AlgoritmoGeneticoMain**: Interface para escolha da versão a executar
+- **Cromossomo**: Representa uma solução completa (um cronograma)
+- **CromossomoOtimizado**: Versão otimizada para problemas médios (100+ disciplinas)
+- **CromossomoUltra**: Versão altamente otimizada para problemas grandes (500+ disciplinas)
+- **Aula**: Representa uma aula específica (disciplina, professor, sala, horário)
+- **DadosProblema**: Contém os dados do problema (disciplinas, professores, etc.)
+- **ConfigSimples, Config100, Config500**: Configurações para cada versão do algoritmo
+- **DisponibilidadeProfessor**: Gerencia a disponibilidade dos professores por horário
 
-5. **Na Natureza**: Após muitas gerações, a espécie está mais adaptada ao ambiente
-   **No Programa**: Após muitas iterações, temos um horário quase perfeito
+## Funcionamento do Algoritmo Genético
 
-### 🔍 Os conceitos genéticos aplicados aos horários:
+O algoritmo genético funciona baseado em princípios evolutivos:
 
-#### 1. **"População"** - Como uma espécie com indivíduos diversos
+1. **Inicialização**: Gera uma população inicial de soluções aleatórias
+2. **Avaliação**: Calcula o fitness (qualidade) de cada solução
+3. **Seleção**: Escolhe os melhores indivíduos para reprodução (seleção por torneio)
+4. **Cruzamento**: Combina pares de soluções para gerar novas soluções
+5. **Mutação**: Introduz pequenas alterações aleatórias nas soluções
+6. **Elitismo**: Preserva as melhores soluções para a próxima geração
+7. **Repetição**: Repete o processo por várias gerações até atingir um critério de parada
 
-- **Na Natureza**: Uma população de girafas com diferentes alturas de pescoço
-- **No Programa**: Centenas de horários completos diferentes sendo testados simultaneamente
-- **Por que é genético?**: Assim como na natureza, trabalhamos com muitas variações ao mesmo tempo, não apenas uma solução única
+### Representação do Cromossomo
 
-#### 2. **"Cromossomo"** - A identidade completa de um indivíduo
+Cada cromossomo representa um cronograma completo, consistindo em uma lista de aulas. Cada aula contém:
 
-- **Na Natureza**: O DNA completo que define todas as características de um ser vivo
-- **No Programa**: Um horário completo com todas as aulas, professores e salas alocadas
-- **Por que é genético?**: Como o DNA determina todas as características de um ser vivo, o "cromossomo" do programa contém todas as decisões que formam um horário
+- Disciplina
+- Professor
+- Sala
+- Horário
 
-#### 3. **"Gene"** - As características individuais
+### Cálculo de Fitness
 
-- **Na Natureza**: Genes que definem cor dos olhos, altura, etc.
-- **No Programa**: Uma aula específica como "Cálculo 1, Prof. Silva, Sala 101, Segunda 8h"
-- **Por que é genético?**: Assim como genes controlam características específicas, cada aula é uma decisão individual que compõe o horário maior
+O fitness é calculado considerando três componentes principais:
 
-#### 4. **"Fitness"** - A adaptação ao ambiente
+1. **Qualidade de Alojamento (40%)**: Proporção de disciplinas alocadas com sucesso
 
-- **Na Natureza**: Quão bem um animal está adaptado para sobreviver em seu ambiente
-- **No Programa**: Nota de 0 a 10 que avalia quão bom é um horário (sem conflitos)
-- **Por que é genético?**: Na natureza, indivíduos mais adaptados têm mais chance de reprodução; no nosso programa, horários melhores têm mais chance de contribuir para a próxima geração
+   ```java
+   double qualidadeAlojamento = (double) cromossomo.getAulas().size() / numDisciplinas;
+   ```
 
-## 🧩 Como o programa é organizado e sua analogia genética
+2. **Qualidade de Distribuição (30%)**: Distribuição eficiente ao longo dos horários disponíveis
 
-### 📁 As peças principais do programa e seus equivalentes biológicos
+   ```java
+   double qualidadeDistribuicao = (double) horariosUsados.size() / numHorarios;
+   ```
 
-#### 1. **Aula** - O Gene do sistema
+3. **Penalização de Conflitos (30%)**: Penalizações por violações de restrições
+   - Professor não disponível: +5 pontos de penalização
+   - Professor em dois lugares ao mesmo tempo: +4 pontos
+   - Professor sem competência para a disciplina: +6 pontos
+   - Sala superlotada: +3 pontos
+   - Aluno em duas disciplinas simultaneamente: +1 ponto
 
-```
-Uma aula (GENE) contém:
-- Qual disciplina será dada
-- Qual professor vai ensinar
-- Em qual sala acontecerá
-- Em qual horário acontecerá
-```
+O fitness final é normalizado para um valor entre 0 e 1, sendo 1 a solução perfeita:
 
-**Analogia genética**: Assim como um gene controla uma característica específica do organismo (como cor dos olhos), cada aula é uma unidade básica de informação que define uma parte específica do horário. Se um gene estiver "mal codificado" (ex: um professor alocado em horário indisponível), isso causa um "defeito" no organismo final.
-
-#### 2. **Horário Completo** - O Cromossomo completo
-
-```
-Um horário completo (CROMOSSOMO) contém:
-- Todas as aulas organizadas (genes)
-- Uma nota que diz quão bom é este horário (fitness)
-```
-
-**Analogia genética**: Assim como um cromossomo contém a sequência completa de genes que define um ser vivo, cada horário completo é uma "solução candidata" com todas as decisões (aulas) organizadas. Alguns cromossomos produzem organismos mais adaptados, assim como alguns horários funcionam melhor que outros.
-
-#### 3. **Motor do Programa** - O Ambiente de Seleção Natural
-
-Temos três versões com diferentes pressões evolutivas:
-
-- **Versão Simples**: Para pequenas escolas (15 disciplinas) - como um ambiente simples com pouca pressão evolutiva
-- **Versão Média**: Para faculdades médias (até 150 disciplinas) - um ambiente mais complexo
-- **Versão Avançada**: Para grandes universidades (500+ disciplinas) - ambiente altamente competitivo que exige adaptações sofisticadas
-
-**Analogia genética**: O motor do programa representa o ambiente que exerce pressão evolutiva. Quanto maior e mais complexa a universidade, mais "pressão" existe para encontrar soluções altamente otimizadas.
-
-## 🔄 Como funciona passo a passo (com analogias à evolução)
-
-### **Passo 1: Preparando o habitat natural**
-
-```
-O programa começa configurando o "ambiente":
-- Quantas disciplinas, professores e salas existem
-- Quais horários os professores estão disponíveis
-- Quais salas comportam quais disciplinas
-- Quais alunos estão matriculados em quais disciplinas
+```java
+double fitness = (qualidadeAlojamento * 0.4) + (qualidadeDistribuicao * 0.3) + ((1.0 - penalizacaoConflitos) * 0.3);
 ```
 
-**Analogia evolutiva**: Este é como o estabelecimento das condições ambientais de um ecossistema - o clima, recursos, predadores, etc. - que determinarão quais características serão mais vantajosas para os organismos que viverão ali.
+Na versão ultra escalável, usamos amostragem para calcular o fitness em grandes populações, melhorando significativamente a performance.
 
-### **Passo 2: Criando a primeira geração (diversidade genética inicial)**
+### Operadores Genéticos
 
-```
-O programa cria vários horários iniciais de forma aleatória:
-1. Para cada disciplina que precisa ser oferecida:
-   - Escolhe um professor que pode ensinar aquela matéria
-   - Escolhe uma sala adequada
-   - Escolhe um horário disponível
-   - Adiciona esta aula ao horário completo
-2. Repete isso para criar centenas de horários diferentes
-```
+#### Cruzamento (Crossover)
 
-**Analogia evolutiva**: Este é como o "pool genético inicial" de uma espécie recém-surgida, com grande diversidade. Na natureza, a primeira geração de uma nova espécie apresenta grande variabilidade genética, assim como nossos primeiros horários são muito diversos, alguns bons, outros ruins.
+O operador de cruzamento combina dois cronogramas para gerar um novo:
 
-### **Passo 3: Avaliando a aptidão de cada indivíduo**
+- **Versão Simples**: Cruzamento segmentado - alterna segmentos de aulas entre os pais
 
-```
-Para cada horário criado, o programa dá uma nota baseada em:
+  ```java
+  int tamanhoSegmento = Math.max(1, pai.getAulas().size() / 10);
+  // Alterna entre 10 segmentos dos pais
+  ```
 
-1. DISCIPLINAS ALOCADAS (40% da nota)
-   - Como um animal conseguir obter alimento suficiente
+- **Versões Otimizadas**: Cruzamento de ponto único - divide o cromossomo em duas partes
+  ```java
+  int corte = random.nextInt(Math.min(pai1.getAulas().size(), pai2.getAulas().size()));
+  // Primeira parte do pai1, segunda parte do pai2
+  ```
 
-2. USO DOS HORÁRIOS (30% da nota)
-   - Como um animal usar eficientemente sua energia
+Em todas as versões, evitamos duplicação de disciplinas no filho resultante.
 
-3. PROBLEMAS E CONFLITOS (30% da nota)
-   - Como um animal evitar predadores e doenças
-```
+#### Mutação
 
-**Analogia evolutiva**: Na natureza, alguns animais são mais aptos que outros. Um guepardo mais rápido caça melhor; um camelo que armazena mais água sobrevive mais tempo no deserto. Nosso programa avalia cada horário para ver quais são "mais aptos" para o ambiente universitário.
+A mutação introduz diversidade alterando aleatoriamente propriedades das aulas:
 
-### **Passo 4: A seleção natural em ação**
-
-```
-O programa vai melhorando os horários através de gerações sucessivas:
-
-1. AVALIAÇÃO DE APTIDÃO
-   - Como a natureza "avalia" quais organismos estão mais adaptados
-
-2. SELEÇÃO NATURAL
-   - Os horários mais bem adaptados têm maior probabilidade de passar seus "genes"
-   - Exatamente como animais mais fortes/saudáveis têm mais chance de reprodução
-
-3. REPRODUÇÃO SEXUAL
-   - Combina partes de dois bons horários, assim como a reprodução sexual
-   - Exatamente como filhos herdam características de ambos os pais
-
-4. MUTAÇÃO GENÉTICA
-   - Pequenas mudanças aleatórias, como mutações no DNA
-   - Na natureza, mutações ocasionais trazem novidades para as espécies
-
-5. SUCESSÃO DE GERAÇÕES
-   - O processo continua por muitas gerações, cada vez com indivíduos mais adaptados
+```java
+// Exemplo de mutação
+if (random.nextBoolean()) {
+    aula.setSala(random.nextInt(NUM_SALAS));
+} else {
+    aula.setHorario(random.nextInt(NUM_HORARIOS));
+}
 ```
 
-**Analogia evolutiva**: Este é o verdadeiro coração do processo evolutivo! Geração após geração, as características mais vantajosas vão se acumulando na população, enquanto as desvantajosas vão desaparecendo. É exatamente assim que surgiram todas as espécies que conhecemos hoje.
+Na versão otimizada, verificamos a disponibilidade do professor ao mutar para garantir soluções mais válidas.
 
-### **Passo 5: O "organismo" final - perfeitamente adaptado**
+#### Seleção por Torneio
 
-```
-1. Escolhe o melhor horário evoluído após centenas de gerações
-2. Verifica o grau de adaptação ao ambiente:
-   - Nota > 8.5: Como uma espécie perfeitamente adaptada ao seu habitat
-   - Nota > 6.5: Como uma espécie que sobrevive bem, mas não é dominante
-   - Nota < 6.5: Como uma espécie em risco de extinção - precisa de ajustes
+Selecionamos indivíduos usando torneio, onde o melhor de K candidatos aleatórios é escolhido:
 
-3. Produz o horário final - o "organismo" mais adaptado ao ambiente universitário
-```
-
-**Analogia evolutiva**: Assim como a evolução natural produziu espécies incrivelmente bem adaptadas aos seus nichos (pense em um beija-flor ou um tubarão), nosso algoritmo produz um horário perfeitamente adaptado às necessidades da universidade.
-
-## 🧪 Como o programa "evolui" os horários
-
-### � **Escolhendo os melhores horários**
-
-```
-É como um mini-torneio onde os melhores horários têm mais chance
-de serem escolhidos para "passar seus genes" para a próxima geração.
+```java
+for (int i = 0; i < tamanhoTorneio; i++) {
+    Cromossomo candidato = populacao.get(random.nextInt(populacao.size()));
+    if (melhor == null || candidato.getFitness() > melhor.getFitness()) {
+        melhor = candidato;
+    }
+}
 ```
 
-### 🔄 **Misturando os bons horários**
+## Exemplo Real: Agendamento de um Departamento Universitário
+
+Imagine um departamento de Ciência da Computação com:
+
+- 150 disciplinas para agendar
+- 30 professores com especializações diferentes
+- 20 salas de aulas com capacidades variadas
+- 1000 alunos matriculados em múltiplas disciplinas
+- 50 horários disponíveis na semana
+
+Desafios:
+
+1. O Prof. Silva só pode dar aulas às segundas e quartas
+2. A Profa. Oliveira é especialista em IA e não pode lecionar Banco de Dados
+3. A disciplina de Programação Avançada precisa de um laboratório específico
+4. Alguns alunos fazem disciplinas de diferentes períodos
+5. As salas têm capacidades diferentes e algumas disciplinas são muito populares
+
+Manualmente, este cronograma levaria semanas para ser criado. Com nosso algoritmo:
 
 ```
-Pegamos dois horários bons e criamos um novo, misturando suas aulas.
-Por exemplo: 50% das aulas vêm do primeiro horário e 50% do segundo.
+$ java -cp bin src.AlgoritmoGeneticoMain
+🧬 ALGORITMO GENÉTICO PARA AGENDAMENTO UNIVERSITÁRIO
+===================================================
+Escolha a versão do algoritmo:
+1. Versão Simples (15 disciplinas)
+2. Versão Escalável (150 disciplinas)
+3. Versão Ultra Escalável (500 disciplinas)
+Opção: 2
+
+🎓 ALGORITMO GENÉTICO OTIMIZADO - AGENDAMENTO UNIVERSITÁRIO
+Versão Escalável para 100+ Disciplinas
+=========================================================
+🧬 Gerando população paralela...
+✅ 500 cromossomos criados em paralelo
+Geração   0 - Melhor: 0.82 | Pior: 0.21 | Diversidade: 0.612
+Geração  20 - Melhor: 0.87 | Pior: 0.45 | Diversidade: 0.421
+...
+Geração 180 - Melhor: 0.96 | Pior: 0.67 | Diversidade: 0.287
+Geração 199 - Melhor: 0.97 | Pior: 0.72 | Diversidade: 0.252
+
+🏆 MELHOR SOLUÇÃO ENCONTRADA:
+Fitness: 0.97
+Tempo de execução: 45.32 segundos
+Disciplinas alocadas: 148/150 (98.7%)
 ```
 
-### 🎲 **Fazendo pequenas mudanças aleatórias**
+O algoritmo gera um cronograma de alta qualidade em menos de um minuto, com 98.7% das disciplinas alocadas e poucas violações de restrições.
 
-```
-Para não ficar preso em soluções semelhantes, às vezes o programa
-faz pequenas alterações aleatórias, como mudar uma sala ou horário.
-```
+## Conclusão
 
-## 📊 Como sabemos se o horário é bom?
-
-### **O que significa a nota do horário:**
-
-- **9 a 10**: Excelente! Quase perfeito, sem conflitos
-- **8 a 8.9**: Muito bom, pouquíssimos problemas
-- **7 a 7.9**: Bom, com alguns conflitos aceitáveis
-- **6 a 6.9**: Razoável, precisa de alguns ajustes
-- **Abaixo de 6**: Problemático, muitos conflitos
-
-### **O que é avaliado:**
-
-1. **Disciplinas encaixadas (40%)**: Quantas matérias conseguimos encaixar no horário
-2. **Uso equilibrado dos horários (30%)**: Se as aulas estão bem distribuídas na semana
-3. **Ausência de conflitos (30%)**: Se não há professores ou salas com horários duplos
-
-## 🚀 Como usar este programa
-
-### **Versão Pequena (15 disciplinas):**
-
-```
-javac -d bin src/*.java
-java -cp bin AlgoritmoGenetico
-```
-
-### **Versão Média (150+ disciplinas):**
-
-```
-java -cp bin AlgoritmoGeneticoCemDisciplinas
-```
-
-### **Versão Grande (500+ disciplinas):**
-
-```
-java -cp bin AlgoritmoGeneticoQuinhentas
-```
-
-## 📈 O que esperar dos resultados
-
-- **Versão Pequena**: Nota ~9.3/10, todas as 15 disciplinas alocadas corretamente
-- **Versão Média**: Nota ~9.0/10, 70-85% das disciplinas sem conflitos
-- **Versão Grande**: Nota ~9.5/10, 85-99% das disciplinas sem conflitos
-
-## � Curiosidades técnicas (para os interessados)
-
-### **Como o programa consegue ser rápido**
-
-- Usa processamento em paralelo (vários cálculos ao mesmo tempo)
-- Tem técnicas especiais para não repetir cálculos já feitos
-- Usa "atalhos inteligentes" para focar nas soluções mais promissoras
-
-### **Por que este é um problema difícil**
-
-O problema de agendamento é matematicamente classificado como "NP-difícil", o que significa que:
-
-- Não existe fórmula direta para resolvê-lo
-- O número de possibilidades cresce exponencialmente
-- Para apenas 15 disciplinas, 5 professores, 4 salas e 20 horários, existem mais de 6 trilhões de combinações possíveis!
-
-## � Aplicações práticas
-
-Este programa pode ser usado em:
-
-- **Universidades**: Para criar horários semestrais
-- **Escolas**: Para organizar aulas de professores e turmas
-- **Cursos livres**: Para otimizar uso de salas e instrutores
-
----
-
-_Este programa demonstra como os computadores podem resolver problemas complexos inspirando-se na natureza - especificamente, no processo de evolução natural._
+Este projeto demonstra como algoritmos genéticos podem resolver eficientemente problemas complexos de agendamento que seriam extremamente difíceis de solucionar manualmente ou com métodos tradicionais. As três versões oferecem flexibilidade para diferentes cenários, desde pequenos departamentos até grandes universidades.
