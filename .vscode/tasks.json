@@ -1,0 +1,20 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "Compilar Projeto Java",
+			"command": "javac",
+			"args": [
+				"-d",
+				"bin",
+				"src/*.java"
+			],
+			"problemMatcher": [
+				"$javac"
+			],
+			"group": "build",
+			"isBackground": false
+		}
+	]
+}

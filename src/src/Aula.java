@@ -1,5 +1,8 @@
+package src;
+
 /**
- * Representa uma aula no cronograma universitário. Contém informações sobre disciplina, professor, sala e horário.
+ * Representa uma aula no cronograma universitário. Contém informações sobre
+ * disciplina, professor, sala e horário.
  */
 public class Aula {
 	private int disciplina;

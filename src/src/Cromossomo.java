@@ -1,8 +1,11 @@
+package src;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Representa um cromossomo no algoritmo genético. Contém uma lista de aulas e seu valor de fitness
+ * Representa um cromossomo no algoritmo genético. Contém uma lista de aulas e
+ * seu valor de fitness
  */
 public class Cromossomo {
 	private List<Aula> aulas;
@@ -58,6 +61,18 @@ public class Cromossomo {
 	public void limpar() {
 		aulas.clear();
 		fitness = 0.0;
+	}
+
+	public boolean temConflitos() {
+		// Implementar lógica para verificar conflitos
+		// Exemplo: Verificar se há sobreposição de horários
+		return false; // Substituir por lógica real
+	}
+
+	public boolean excedeCapacidade() {
+		// Implementar lógica para verificar capacidade excedida
+		// Exemplo: Comparar número de alunos com capacidade da sala
+		return false; // Substituir por lógica real
 	}
 
 	@Override
