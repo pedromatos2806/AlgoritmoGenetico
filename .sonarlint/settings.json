@@ -1,0 +1,25 @@
+{
+  "projectKey": "AlgoritmoGenetico_02",
+  "serverId": "",
+  "rules": {
+    "java:S106": {
+      "level": "off",
+      "parameters": {}
+    },
+    "java:S1220": {
+      "level": "off"
+    },
+    "java:S1186": {
+      "level": "off"
+    }
+  },
+  "excludes": [
+    "**/src/**",
+    "**/*.java"
+  ],
+  "testFilePattern": "**/*Test.java",
+  "autoAnalysis": false,
+  "connectedMode": {
+    "enabled": false
+  }
+}

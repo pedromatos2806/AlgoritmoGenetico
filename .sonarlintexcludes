@@ -1,0 +1,5 @@
+# SonarLint exclusions
+# Exclude all Java files in this educational project
+src/**/*.java
+bin/**
+*.class
