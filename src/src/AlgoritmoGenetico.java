@@ -33,7 +33,7 @@ public class AlgoritmoGenetico {
     // ----- CONFIGURAÇÕES -----
     static final int POPULACAO = 500; // Maior população para maior diversidade
     static final int GERACOES = 200; // Mais gerações para convergência
-    static final double TAXA_MUTACAO = 0.05; // Taxa menor para preservar boas soluções
+    static final double TAXA_MUTACAO = 0.15; // Taxa menor para preservar boas soluções
     static final double TAXA_CRUZAMENTO = 0.85; // Taxa maior para exploração
     static final int ELITE_SIZE = 50; // Número de melhores preservados
     static final int TOURNAMENT_SIZE = 5; // Tamanho do torneio para seleção
@@ -61,6 +61,93 @@ public class AlgoritmoGenetico {
     static int[] capacidadeSalas;
     static List<Set<Integer>> alunosPorDisciplina;
 
+    
+    
+ // ----- ALGORITMO PRINCIPAL -----
+    public static void main(String[] args) {
+        long startTime = System.currentTimeMillis();
+
+        System.out.println("🎓 ALGORITMO GENÉTICO - AGENDAMENTO UNIVERSITÁRIO");
+        System.out.println("Versão para 150 Disciplinas");
+        System.out.println("=========================================================");
+
+        try {
+            // Gerar população inicial
+            List<Cromossomo> populacao = gerarPopulacao();
+
+            // Evolução
+            for (int geracao = 0; geracao < GERACOES; geracao++) {
+                populacao = evoluirPopulacao(populacao);
+
+                if (geracao % 20 == 0 || geracao == GERACOES - 1) {
+                    double melhorFitness = populacao.get(0).getFitness();
+                    double piorFitness = populacao.get(populacao.size() - 1).getFitness();
+                    double diversidade = melhorFitness - piorFitness;
+                    System.out.printf("Geração %3d - Melhor: %.2f | Pior: %.2f%n", geracao, melhorFitness, piorFitness, diversidade);
+                }
+            }
+
+            // Resultado final
+            Cromossomo melhor = populacao.get(0);
+            long endTime = System.currentTimeMillis();
+
+            System.out.println("\n🏆 MELHOR SOLUÇÃO ENCONTRADA:");
+            System.out.printf("Fitness: %.2f%n", melhor.getFitness());
+            System.out.printf("Tempo de execução: %.2f segundos%n", (endTime - startTime) / 1000.0);
+            System.out.printf("Disciplinas alocadas: %d/%d (%.1f%%)%n",
+                    melhor.getAulas().size(), NUM_DISCIPLINAS,
+                    100.0 * melhor.getAulas().size() / NUM_DISCIPLINAS);
+
+            // Salvar resultado
+            salvarCronograma(melhor);
+
+        } finally {
+            executor.shutdown();
+        }
+    }
+
+    static void salvarCronograma(Cromossomo cromossomo) {
+        try (PrintWriter writer = new PrintWriter("cronograma.txt")) {
+            writer.println("CRONOGRAMA UNIVERSITÁRIO - EDUCAÇÃO AVANÇADA");
+            writer.println("Gerado por Algoritmo Genético");
+            writer.println("=====================================================");
+            writer.println();
+
+            Map<Integer, List<Aula>> aulasPorHorario = cromossomo.getAulas().stream()
+                    .collect(Collectors.groupingBy(Aula::getHorario));
+
+            String[] dias = { "Segunda", "Terça", "Quarta", "Quinta", "Sexta" };
+            int horariosPerDay = NUM_HORARIOS / 5;
+
+            for (int dia = 0; dia < 5; dia++) {
+                writer.printf("\n=== %s ===%n", dias[dia].toUpperCase());
+
+                for (int hora = 0; hora < horariosPerDay; hora++) {
+                    int horarioId = dia * horariosPerDay + hora;
+                    writer.printf("%02d:00--%02d:00:%n", 8 + hora * 2, 10 + hora * 2);
+
+                    List<Aula> aulas = aulasPorHorario.getOrDefault(horarioId, Collections.emptyList());
+                    if (aulas.isEmpty()) {
+                        writer.println("  (sem aulas)");
+                    } else {
+                        for (Aula aula : aulas) {
+                            writer.printf("  %s - %s (Sala %d)%n",
+                                    nomesDisciplinas[aula.getDisciplina()],
+                                    nomesProfessores[aula.getProfessor()],
+                                    aula.getSala() + 1);
+                        }
+                    }
+                }
+            }
+
+            System.out.println("💾 Cronograma salvo em 'cronograma.txt ' com sucesso!\nPor PEDRO MATOS");
+
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar arquivo: " + e.getMessage());
+        }
+    }
+    
+    
     // ----- INICIALIZAÇÃO -----
     static {
         initializarDados();
@@ -258,7 +345,7 @@ public class AlgoritmoGenetico {
         return Math.max(0.0, Math.min(1.0, fitness));
     }
 
-    // ----- GERAÇÃO PARALELA DE POPULAÇÃO -----
+    // ----- GERAÇÃO DA POPULAÇÃO -----
     static List<Cromossomo> gerarPopulacao() {
         System.out.println("🧬 Gerando população ...");
 
@@ -422,87 +509,5 @@ public class AlgoritmoGenetico {
         return mutado;
     }
 
-    // ----- ALGORITMO PRINCIPAL -----
-    public static void main(String[] args) {
-        long startTime = System.currentTimeMillis();
 
-        System.out.println("🎓 ALGORITMO GENÉTICO - AGENDAMENTO UNIVERSITÁRIO");
-        System.out.println("Versão para 100+ Disciplinas");
-        System.out.println("=========================================================");
-
-        try {
-            // Gerar população inicial
-            List<Cromossomo> populacao = gerarPopulacao();
-
-            // Evolução
-            for (int geracao = 0; geracao < GERACOES; geracao++) {
-                populacao = evoluirPopulacao(populacao);
-
-                if (geracao % 20 == 0 || geracao == GERACOES - 1) {
-                    double melhorFitness = populacao.get(0).getFitness();
-                    double piorFitness = populacao.get(populacao.size() - 1).getFitness();
-                    double diversidade = melhorFitness - piorFitness;
-                    System.out.printf("Geração %3d - Melhor: %.2f | Pior: %.2f | Diversidade: %.3f%n", geracao, melhorFitness, piorFitness, diversidade);
-                }
-            }
-
-            // Resultado final
-            Cromossomo melhor = populacao.get(0);
-            long endTime = System.currentTimeMillis();
-
-            System.out.println("\n🏆 MELHOR SOLUÇÃO ENCONTRADA:");
-            System.out.printf("Fitness: %.2f%n", melhor.getFitness());
-            System.out.printf("Tempo de execução: %.2f segundos%n", (endTime - startTime) / 1000.0);
-            System.out.printf("Disciplinas alocadas: %d/%d (%.1f%%)%n",
-                    melhor.getAulas().size(), NUM_DISCIPLINAS,
-                    100.0 * melhor.getAulas().size() / NUM_DISCIPLINAS);
-
-            // Salvar resultado
-            salvarCronograma(melhor);
-
-        } finally {
-            executor.shutdown();
-        }
-    }
-
-    static void salvarCronograma(Cromossomo cromossomo) {
-        try (PrintWriter writer = new PrintWriter("cronograma.txt")) {
-            writer.println("CRONOGRAMA UNIVERSITÁRIO - EDUCAÇÃO AVANÇADA");
-            writer.println("Gerado por Algoritmo Genético");
-            writer.println("=====================================================");
-            writer.println();
-
-            Map<Integer, List<Aula>> aulasPorHorario = cromossomo.getAulas().stream()
-                    .collect(Collectors.groupingBy(Aula::getHorario));
-
-            String[] dias = { "Segunda", "Terça", "Quarta", "Quinta", "Sexta" };
-            int horariosPerDay = NUM_HORARIOS / 5;
-
-            for (int dia = 0; dia < 5; dia++) {
-                writer.printf("\n=== %s ===%n", dias[dia].toUpperCase());
-
-                for (int hora = 0; hora < horariosPerDay; hora++) {
-                    int horarioId = dia * horariosPerDay + hora;
-                    writer.printf("%02d:00--%02d:00:%n", 8 + hora * 2, 10 + hora * 2);
-
-                    List<Aula> aulas = aulasPorHorario.getOrDefault(horarioId, Collections.emptyList());
-                    if (aulas.isEmpty()) {
-                        writer.println("  (sem aulas)");
-                    } else {
-                        for (Aula aula : aulas) {
-                            writer.printf("  %s - %s (Sala %d)%n",
-                                    nomesDisciplinas[aula.getDisciplina()],
-                                    nomesProfessores[aula.getProfessor()],
-                                    aula.getSala() + 1);
-                        }
-                    }
-                }
-            }
-
-            System.out.println("💾 Cronograma salvo em 'cronograma.txt'");
-
-        } catch (IOException e) {
-            System.err.println("Erro ao salvar arquivo: " + e.getMessage());
-        }
-    }
 }

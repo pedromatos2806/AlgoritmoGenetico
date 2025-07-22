@@ -103,8 +103,6 @@ Um cromossomo representa uma solução para o problema de agendamento. Ele é co
 
 ## Execução do Algoritmo Genético
 
-### Passo a Passo
-
 #### Inicialização dos Dados
 
 O método `initializarDadosEscalaveis` é chamado para configurar os dados do problema, como disciplinas, professores, salas e horários.
