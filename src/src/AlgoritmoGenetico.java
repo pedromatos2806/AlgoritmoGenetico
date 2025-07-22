@@ -205,7 +205,7 @@ public class AlgoritmoGenetico {
         }
 
         System.out.println("✅ Dados inicializados!");
-        System.out.printf("📊 %d disciplinas, %d professores, %d salas, %d horários%n",
+        System.out.printf("📊 %d disciplinas, %d professores, %d salas, %d horários%n%n",
                 NUM_DISCIPLINAS, NUM_PROFESSORES, NUM_SALAS, NUM_HORARIOS);
     }
 

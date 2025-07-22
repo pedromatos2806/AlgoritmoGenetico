@@ -28,17 +28,66 @@ Este projeto implementa um algoritmo genético para otimizar cronogramas de aula
 
 ### Cálculo do Fitness
 
-O fitness é calculado com base em critérios como:
+O fitness é uma medida da qualidade do cronograma gerado, normalizada entre 0.0 e 1.0, onde 1.0 representa uma solução perfeita. O cálculo é composto por três componentes principais:
 
-- **Distribuição de aulas**: Minimizar conflitos de horários e superlotação de salas.
-- **Preferências de professores**: Garantir que professores estejam disponíveis nos horários atribuídos.
-- **Eficiência do cronograma**: Maximizar o uso de recursos como salas e horários.
+#### 1. Qualidade de Alojamento (40% do fitness)
 
-A função de fitness utiliza componentes ponderados, como:
+- Avalia a quantidade de disciplinas efetivamente alocadas.
+- Calculado como: `numeroDeAulasAlocadas / numeroDeDisciplinas`
+- Penaliza soluções que deixam disciplinas sem horário.
+- Peso maior (40%) por ser o objetivo principal do algoritmo.
 
-- **Alojamento**: 40% do fitness.
-- **Distribuição**: 30% do fitness.
-- **Qualidade**: 30% do fitness.
+#### 2. Qualidade de Distribuição (30% do fitness)
+
+- Avalia o aproveitamento dos horários disponíveis.
+- Calculado como: `numeroDiferenteDeHorariosUsados / numeroTotalDeHorarios`
+- Incentiva o uso uniforme dos horários ao longo da semana.
+- Evita concentração excessiva de aulas em poucos horários.
+
+#### 3. Penalizações por Conflitos (30% do fitness)
+
+Reduz o fitness baseado em diversos tipos de conflitos, com pesos diferentes:
+
+- **Conflitos de Professor (Peso 6)**
+
+  - Professor designado para disciplina que não pode lecionar
+  - Penalização mais severa por violar uma restrição fundamental
+
+- **Indisponibilidade de Professor (Peso 5)**
+
+  - Professor alocado em horário que não está disponível
+  - Alta penalização por comprometer a execução do cronograma
+
+- **Professor em Múltiplas Aulas (Peso 4)**
+
+  - Professor alocado em duas ou mais aulas simultâneas
+  - Penalização significativa por impossibilidade física
+
+- **Superlotação de Sala (Peso 3)**
+
+  - Número de alunos excede a capacidade da sala
+  - Penalização moderada por questões de infraestrutura
+
+- **Conflitos de Alunos (Peso 1)**
+  - Aluno alocado em duas disciplinas no mesmo horário
+  - Penalização menor por ser mais flexível
+
+#### Fórmula do Fitness Final
+
+```
+fitness = (qualidadeAlojamento * 0.4) +
+         (qualidadeDistribuicao * 0.3) +
+         ((1.0 - penalizacaoConflitos) * 0.3)
+```
+
+O resultado é normalizado entre 0.0 e 1.0, onde:
+
+- **0.0 a 0.3**: Solução muito ruim, com muitos conflitos
+- **0.3 a 0.6**: Solução regular, com alguns conflitos
+- **0.6 a 0.8**: Solução boa, com poucos conflitos
+- **0.8 a 1.0**: Solução excelente, com mínimo de conflitos
+
+O algoritmo utiliza cache para otimizar o cálculo do fitness, evitando recalcular valores para cromossomos idênticos. Cada cromossomo possui um hash único baseado em suas características, permitindo um cache eficiente em um ambiente paralelo.
 
 ## Detalhes do Algoritmo
 
