@@ -17,20 +17,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import src.AlgoritmoGeneticoCemDisciplinas.CromossomoOtimizado;
+import src.AlgoritmoGenetico.Cromossomo;
 
 /**
- * Algoritmo Genético Otimizado para Agendamento Universitário
+ * Algoritmo Genético para Agendamento Universitário
  * 
  * OTIMIZAÇÕES PARA 100+ DISCIPLINAS:
  * - Paralelização usando threads
- * - Estruturas de dados mais eficientes
- * - Algoritmos de fitness otimizados
+ * - Algoritmos de fitness
  * - Cache de resultados
  * - Elitismo adaptativo
  */
 @SuppressWarnings("java:S106") // Suprime avisos sobre System.out em projeto educacional
-public class AlgoritmoGeneticoCemDisciplinas {
+public class AlgoritmoGenetico {
 
     // ========== CONFIGURAÇÕES ESCALÁVEIS ==========
     static final int POPULACAO = 500; // Maior população para maior diversidade
@@ -51,7 +50,7 @@ public class AlgoritmoGeneticoCemDisciplinas {
     static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
     static final ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 
-    // ========== CACHE E OTIMIZAÇÕES ==========
+    // ========== CACHE ==========
     static final Map<String, Double> fitnessCache = new ConcurrentHashMap<>();
     static final Random random = ThreadLocalRandom.current();
 
@@ -63,7 +62,7 @@ public class AlgoritmoGeneticoCemDisciplinas {
     static int[] capacidadeSalas;
     static List<Set<Integer>> alunosPorDisciplina;
 
-    // ========== INICIALIZAÇÃO ESCALÁVEL ==========
+    // ----- INICIALIZAÇÃO -----
     static {
         initializarDadosEscalaveis();
     }
@@ -94,7 +93,7 @@ public class AlgoritmoGeneticoCemDisciplinas {
             capacidadeSalas[i] = 30 + random.nextInt(71); // 30-100 alunos por sala
         }
 
-        // Disponibilidade dos professores (otimizada)
+        // Disponibilidade dos professores
         disponibilidadeProfessor = new boolean[NUM_PROFESSORES][NUM_HORARIOS];
         for (int p = 0; p < NUM_PROFESSORES; p++) {
             for (int h = 0; h < NUM_HORARIOS; h++) {
@@ -102,7 +101,7 @@ public class AlgoritmoGeneticoCemDisciplinas {
             }
         }
 
-        // Distribuição de disciplinas por professor (otimizada)
+        // Distribuição de disciplinas por professor
         disciplinasPorProfessor = new int[NUM_PROFESSORES][];
         int disciplinasPorProf = Math.max(3, NUM_DISCIPLINAS / NUM_PROFESSORES + 2);
         for (int p = 0; p < NUM_PROFESSORES; p++) {
@@ -113,7 +112,7 @@ public class AlgoritmoGeneticoCemDisciplinas {
             disciplinasPorProfessor[p] = disciplinas.stream().mapToInt(Integer::intValue).toArray();
         }
 
-        // Distribuição de alunos por disciplina (otimizada)
+        // Distribuição de alunos por disciplina
         alunosPorDisciplina = new ArrayList<>(NUM_DISCIPLINAS);
         for (int d = 0; d < NUM_DISCIPLINAS; d++) {
             Set<Integer> alunos = new HashSet<>();
@@ -129,18 +128,18 @@ public class AlgoritmoGeneticoCemDisciplinas {
                 NUM_DISCIPLINAS, NUM_PROFESSORES, NUM_SALAS, NUM_HORARIOS);
     }
 
-    // ========== CLASSE OTIMIZADA PARA CROMOSSOMO ==========
-    static class CromossomoOtimizado {
+    //---------- CLASSE PARA CROMOSSOMO -----
+    static class Cromossomo {
         private final List<Aula> aulas;
         private Double fitness;
         private final String hash;
 
-        public CromossomoOtimizado(List<Aula> aulas) {
+        public Cromossomo(List<Aula> aulas) {
             this.aulas = new ArrayList<>(aulas);
             this.hash = calcularHash();
         }
 
-        public CromossomoOtimizado(CromossomoOtimizado outro) {
+        public Cromossomo(Cromossomo outro) {
             this.aulas = new ArrayList<>();
             for (Aula aula : outro.aulas) {
                 this.aulas.add(new Aula(aula.getDisciplina(), aula.getProfessor(),
@@ -162,7 +161,7 @@ public class AlgoritmoGeneticoCemDisciplinas {
 
         public double getFitness() {
             if (fitness == null) {
-                fitness = fitnessCache.computeIfAbsent(hash, k -> calcularFitnessOtimizado(this));
+                fitness = fitnessCache.computeIfAbsent(hash, k -> calcularFitness(this));
             }
             return fitness;
         }
@@ -173,8 +172,8 @@ public class AlgoritmoGeneticoCemDisciplinas {
         }
     }
 
-    // ========== FUNÇÃO DE FITNESS OTIMIZADA ==========
-    static double calcularFitnessOtimizado(CromossomoOtimizado cromossomo) {
+    // ----- FUNÇÃO DE FITNESS -----
+    static double calcularFitness(Cromossomo cromossomo) {
         // Fitness normalizado para variar entre 0 e 1
 
         // 1. QUALIDADE DE ALOJAMENTO (40% do fitness)
@@ -260,17 +259,17 @@ public class AlgoritmoGeneticoCemDisciplinas {
         return Math.max(0.0, Math.min(1.0, fitness));
     }
 
-    // ========== GERAÇÃO PARALELA DE POPULAÇÃO ==========
-    static List<CromossomoOtimizado> gerarPopulacaoParalela() {
+    // ----- GERAÇÃO PARALELA DE POPULAÇÃO -----
+    static List<Cromossomo> gerarPopulacaoParalela() {
         System.out.println("🧬 Gerando população paralela...");
 
-        List<CompletableFuture<CromossomoOtimizado>> futures = new ArrayList<>();
+        List<CompletableFuture<Cromossomo>> futures = new ArrayList<>();
 
         for (int i = 0; i < POPULACAO; i++) {
-            futures.add(CompletableFuture.supplyAsync(() -> gerarCromossomoAleatorioOtimizado(), executor));
+            futures.add(CompletableFuture.supplyAsync(() -> gerarCromossomoAleatorio(), executor));
         }
 
-        List<CromossomoOtimizado> populacao = futures.stream()
+        List<Cromossomo> populacao = futures.stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
 
@@ -278,7 +277,7 @@ public class AlgoritmoGeneticoCemDisciplinas {
         return populacao;
     }
 
-    static CromossomoOtimizado gerarCromossomoAleatorioOtimizado() {
+    static Cromossomo gerarCromossomoAleatorio() {
         List<Aula> aulas = new ArrayList<>();
         Set<Integer> disciplinasUsadas = new HashSet<>();
 
@@ -315,33 +314,33 @@ public class AlgoritmoGeneticoCemDisciplinas {
             }
         }
 
-        return new CromossomoOtimizado(aulas);
+        return new Cromossomo(aulas);
     }
 
-    // ========== EVOLUÇÃO PARALELA ==========
-    static List<CromossomoOtimizado> evoluirPopulacaoParalela(List<CromossomoOtimizado> populacao) {
+    // ----- EVOLUÇÃO PARALELA -----
+    static List<Cromossomo> evoluirPopulacaoParalela(List<Cromossomo> populacao) {
         // Calcular fitness em paralelo
-        populacao.parallelStream().forEach(CromossomoOtimizado::getFitness);
+        populacao.parallelStream().forEach(Cromossomo::getFitness);
 
         // Ordenar por fitness
         populacao.sort((a, b) -> Double.compare(b.getFitness(), a.getFitness()));
 
-        List<CromossomoOtimizado> novaPopulacao = new ArrayList<>();
+        List<Cromossomo> novaPopulacao = new ArrayList<>();
 
         // Elitismo - preservar os melhores
         for (int i = 0; i < ELITE_SIZE; i++) {
-            novaPopulacao.add(new CromossomoOtimizado(populacao.get(i)));
+            novaPopulacao.add(new Cromossomo(populacao.get(i)));
         }
 
         // Gerar resto da população em paralelo
-        List<CompletableFuture<CromossomoOtimizado>> futures = new ArrayList<>();
+        List<CompletableFuture<Cromossomo>> futures = new ArrayList<>();
 
         for (int i = ELITE_SIZE; i < POPULACAO; i++) {
             futures.add(CompletableFuture.supplyAsync(() -> {
-                CromossomoOtimizado pai1 = selecionarPorTorneio(populacao);
-                CromossomoOtimizado pai2 = selecionarPorTorneio(populacao);
-                CromossomoOtimizado filho = cruzarOtimizado(pai1, pai2);
-                return mutarOtimizado(filho);
+                Cromossomo pai1 = selecionarPorTorneio(populacao);
+                Cromossomo pai2 = selecionarPorTorneio(populacao);
+                Cromossomo filho = cruzar(pai1, pai2);
+                return fazerMutacao(filho);
             }, executor));
         }
 
@@ -352,10 +351,10 @@ public class AlgoritmoGeneticoCemDisciplinas {
         return novaPopulacao;
     }
 
-    static CromossomoOtimizado selecionarPorTorneio(List<CromossomoOtimizado> populacao) {
-        CromossomoOtimizado melhor = null;
+    static Cromossomo selecionarPorTorneio(List<Cromossomo> populacao) {
+        Cromossomo melhor = null;
         for (int i = 0; i < TOURNAMENT_SIZE; i++) {
-            CromossomoOtimizado candidato = populacao.get(random.nextInt(populacao.size()));
+            Cromossomo candidato = populacao.get(random.nextInt(populacao.size()));
             if (melhor == null || candidato.getFitness() > melhor.getFitness()) {
                 melhor = candidato;
             }
@@ -363,9 +362,9 @@ public class AlgoritmoGeneticoCemDisciplinas {
         return melhor;
     }
 
-    static CromossomoOtimizado cruzarOtimizado(CromossomoOtimizado pai1, CromossomoOtimizado pai2) {
+    static Cromossomo cruzar(Cromossomo pai1, Cromossomo pai2) {
         if (random.nextDouble() > TAXA_CRUZAMENTO) {
-            return new CromossomoOtimizado(pai1);
+            return new Cromossomo(pai1);
         }
 
         List<Aula> aulasFilho = new ArrayList<>();
@@ -391,10 +390,10 @@ public class AlgoritmoGeneticoCemDisciplinas {
             }
         }
 
-        return new CromossomoOtimizado(aulasFilho);
+        return new Cromossomo(aulasFilho);
     }
 
-    static CromossomoOtimizado mutarOtimizado(CromossomoOtimizado cromossomo) {
+    static Cromossomo fazerMutacao(Cromossomo cromossomo) {
         if (random.nextDouble() > TAXA_MUTACAO) {
             return cromossomo;
         }
@@ -419,22 +418,22 @@ public class AlgoritmoGeneticoCemDisciplinas {
             }
         }
 
-        CromossomoOtimizado mutado = new CromossomoOtimizado(aulas);
+        Cromossomo mutado = new Cromossomo(aulas);
         mutado.invalidarFitness();
         return mutado;
     }
 
-    // ========== ALGORITMO PRINCIPAL ==========
+    // ----- ALGORITMO PRINCIPAL -----
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
 
-        System.out.println("🎓 ALGORITMO GENÉTICO OTIMIZADO - AGENDAMENTO UNIVERSITÁRIO");
+        System.out.println("🎓 ALGORITMO GENÉTICO - AGENDAMENTO UNIVERSITÁRIO");
         System.out.println("Versão Escalável para 100+ Disciplinas");
         System.out.println("=========================================================");
 
         try {
             // Gerar população inicial
-            List<CromossomoOtimizado> populacao = gerarPopulacaoParalela();
+            List<Cromossomo> populacao = gerarPopulacaoParalela();
 
             // Evolução
             for (int geracao = 0; geracao < GERACOES; geracao++) {
@@ -450,7 +449,7 @@ public class AlgoritmoGeneticoCemDisciplinas {
             }
 
             // Resultado final
-            CromossomoOtimizado melhor = populacao.get(0);
+            Cromossomo melhor = populacao.get(0);
             long endTime = System.currentTimeMillis();
 
             System.out.println("\n🏆 MELHOR SOLUÇÃO ENCONTRADA:");
@@ -461,16 +460,16 @@ public class AlgoritmoGeneticoCemDisciplinas {
                     100.0 * melhor.getAulas().size() / NUM_DISCIPLINAS);
 
             // Salvar resultado
-            salvarCronogramaOtimizado(melhor);
+            salvarCronograma(melhor);
 
         } finally {
             executor.shutdown();
         }
     }
 
-    static void salvarCronogramaOtimizado(CromossomoOtimizado cromossomo) {
-        try (PrintWriter writer = new PrintWriter("cronograma_otimizado.txt")) {
-            writer.println("CRONOGRAMA UNIVERSITÁRIO OTIMIZADO - EDUCAÇÃO AVANÇADA");
+    static void salvarCronograma(Cromossomo cromossomo) {
+        try (PrintWriter writer = new PrintWriter("cronograma.txt")) {
+            writer.println("CRONOGRAMA UNIVERSITÁRIO - EDUCAÇÃO AVANÇADA");
             writer.println("Gerado por Algoritmo Genético Escalável");
             writer.println("=====================================================");
             writer.println();
@@ -502,7 +501,7 @@ public class AlgoritmoGeneticoCemDisciplinas {
                 }
             }
 
-            System.out.println("💾 Cronograma otimizado salvo em 'cronograma_otimizado.txt'");
+            System.out.println("💾 Cronograma salvo em 'cronograma.txt'");
 
         } catch (IOException e) {
             System.err.println("Erro ao salvar arquivo: " + e.getMessage());

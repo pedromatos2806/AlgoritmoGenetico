@@ -1,191 +1,118 @@
-# Algoritmo Genético para Agendamento Universitário
+# Algoritmo Genético para Otimização de Cronogramas
 
-Este projeto implementa um algoritmo genético para resolver o problema de agendamento de aulas universitárias com 100-150 disciplinas. O sistema utiliza paralelização e heurísticas avançadas para gerar cronogramas otimizados.
+## Introdução
 
-## O Problema Real
-
-O agendamento de aulas universitárias é um problema de otimização combinatória NP-difícil. Em uma universidade típica, temos:
-
-- **Disciplinas**: Cada curso possui várias disciplinas que precisam ser oferecidas
-- **Professores**: Cada professor tem competências específicas e disponibilidade limitada
-- **Salas**: Recursos físicos com capacidades diferentes
-- **Horários**: Períodos disponíveis durante a semana
-- **Alunos**: Que se matriculam em diversas disciplinas e não podem ter aulas conflitantes
-
-Um coordenador acadêmico pode levar semanas para criar manualmente um cronograma que atenda a todas essas restrições. Nosso algoritmo genético consegue gerar soluções de alta qualidade em minutos, atendendo às restrições e maximizando o aproveitamento dos recursos.
-
-## Versões do Algoritmo
-
-O projeto oferece três versões do algoritmo:
-
-1. **Versão Simples**: Otimizada para 15 disciplinas, ideal para testes iniciais
-2. **Versão Escalável**: Otimizada para 100-150 disciplinas, com paralelização
-3. **Versão Ultra Escalável**: Otimizada para 500+ disciplinas, com heurísticas avançadas
+Este projeto implementa um algoritmo genético para otimizar cronogramas de aulas universitárias. O objetivo é encontrar uma solução que minimize conflitos e maximize a eficiência do cronograma, considerando restrições específicas como disponibilidade de professores, capacidade das salas e horários.
 
 ## Estrutura do Projeto
 
-### Classes Principais
+### Arquivos e Pastas
 
-- **AlgoritmoGenetico**: Contém as três versões do algoritmo (mainSimples, mainCem, mainQuinhentas)
-- **AlgoritmoGeneticoMain**: Interface para escolha da versão a executar
-- **Cromossomo**: Representa uma solução completa (um cronograma)
-- **CromossomoOtimizado**: Versão otimizada para problemas médios (100+ disciplinas)
-- **CromossomoUltra**: Versão altamente otimizada para problemas grandes (500+ disciplinas)
-- **Aula**: Representa uma aula específica (disciplina, professor, sala, horário)
-- **DadosProblema**: Contém os dados do problema (disciplinas, professores, etc.)
-- **ConfigSimples, Config100, Config500**: Configurações para cada versão do algoritmo
-- **DisponibilidadeProfessor**: Gerencia a disponibilidade dos professores por horário
+- **src/**: Contém os arquivos fonte do projeto.
+  - `AlgoritmoGeneticoCemDisciplinas.java`: Classe principal que implementa o algoritmo genético.
+  - `Aula.java`: Representa uma aula no cronograma.
+- **bin/**: Diretório onde os arquivos compilados são armazenados.
+- **config.properties**: Arquivo de configuração com parâmetros do algoritmo.
+- **cronograma_simples.txt**: Exemplo de cronograma inicial.
+- **cronograma_otimizado.txt**: Resultado do cronograma otimizado.
 
 ## Funcionamento do Algoritmo Genético
 
-O algoritmo genético funciona baseado em princípios evolutivos:
+### Passos Principais
 
-1. **Inicialização**: Gera uma população inicial de soluções aleatórias
-2. **Avaliação**: Calcula o fitness (qualidade) de cada solução
-3. **Seleção**: Escolhe os melhores indivíduos para reprodução (seleção por torneio)
-4. **Cruzamento**: Combina pares de soluções para gerar novas soluções
-5. **Mutação**: Introduz pequenas alterações aleatórias nas soluções
-6. **Elitismo**: Preserva as melhores soluções para a próxima geração
-7. **Repetição**: Repete o processo por várias gerações até atingir um critério de parada
+1. **Inicialização**: Geração de uma população inicial de cromossomos (soluções).
+2. **Avaliação (Fitness)**: Cada cromossomo é avaliado com base em uma função de fitness que mede a qualidade do cronograma.
+3. **Seleção**: Cromossomos com melhor fitness são selecionados para reprodução.
+4. **Cruzamento (Crossover)**: Combinação de cromossomos selecionados para gerar novos cromossomos.
+5. **Mutação**: Alteração aleatória em cromossomos para introduzir diversidade.
+6. **Iteração**: Repetição dos passos até atingir um critério de parada (número de gerações ou fitness satisfatório).
 
-### Representação do Cromossomo
+## Classes
 
-Cada cromossomo representa um cronograma completo, consistindo em uma lista de aulas. Cada aula contém:
+### `AlgoritmoGeneticoCemDisciplinas`
 
-- Disciplina
-- Professor
-- Sala
-- Horário
+- Classe principal que gerencia o algoritmo genético.
+- Responsável por:
+  - Inicializar a população.
+  - Executar os passos do algoritmo genético.
+  - Salvar o cronograma otimizado.
+- Implementa paralelização para maior eficiência.
 
-### Cálculo de Fitness
+### `Aula`
 
-O fitness é calculado considerando três componentes principais:
+- Representa uma aula no cronograma.
+- Contém informações como:
+  - Disciplina.
+  - Professor.
+  - Sala.
+  - Horário.
+- Inclui métodos para manipulação e comparação de aulas.
 
-1. **Qualidade de Alojamento (40%)**: Proporção de disciplinas alocadas com sucesso
+### `CromossomoOtimizado`
 
-   ```java
-   double qualidadeAlojamento = (double) cromossomo.getAulas().size() / numDisciplinas;
-   ```
+- Classe interna de `AlgoritmoGeneticoCemDisciplinas`.
+- Representa um cromossomo (solução).
+- Contém métodos para:
+  - Avaliação de fitness.
+  - Aplicação de mutação.
+  - Cruzamento com outros cromossomos.
 
-2. **Qualidade de Distribuição (30%)**: Distribuição eficiente ao longo dos horários disponíveis
+## Detalhes do Algoritmo
 
-   ```java
-   double qualidadeDistribuicao = (double) horariosUsados.size() / numHorarios;
-   ```
+### Mutação
 
-3. **Penalização de Conflitos (30%)**: Penalizações por violações de restrições
-   - Professor não disponível: +5 pontos de penalização
-   - Professor em dois lugares ao mesmo tempo: +4 pontos
-   - Professor sem competência para a disciplina: +6 pontos
-   - Sala superlotada: +3 pontos
-   - Aluno em duas disciplinas simultaneamente: +1 ponto
+A mutação é realizada alterando aleatoriamente elementos do cromossomo, como horários ou disciplinas. Por exemplo:
 
-O fitness final é normalizado para um valor entre 0 e 1, sendo 1 a solução perfeita:
+- Trocar o horário de uma aula.
+- Alterar o professor responsável por uma disciplina.
+- Modificar a sala atribuída a uma aula.
 
-```java
-double fitness = (qualidadeAlojamento * 0.4) + (qualidadeDistribuicao * 0.3) + ((1.0 - penalizacaoConflitos) * 0.3);
+Essas alterações introduzem diversidade na população e ajudam a evitar que o algoritmo fique preso em mínimos locais.
+
+### Fitness
+
+A função de fitness avalia a qualidade do cronograma com base em critérios como:
+
+- **Redução de Conflitos**: Evitar que professores ou alunos tenham horários conflitantes.
+- **Distribuição Equilibrada**: Garantir que as aulas sejam distribuídas de forma eficiente ao longo da semana.
+- **Preferências de Professores**: Respeitar a disponibilidade dos professores.
+- **Capacidade das Salas**: Garantir que o número de alunos não exceda a capacidade das salas.
+
+A avaliação de fitness utiliza normalização para que os valores fiquem entre 0 e 1, facilitando a comparação entre soluções.
+
+## Como Executar
+
+### Compilar o Projeto
+
+Execute o script `compilar.bat`:
+
+```bash
+compilar.bat
 ```
 
-Na versão ultra escalável, usamos amostragem para calcular o fitness em grandes populações, melhorando significativamente a performance.
+### Executar o Projeto
 
-### Operadores Genéticos
+Execute o script `executar.bat`:
 
-#### Cruzamento (Crossover)
-
-O operador de cruzamento combina dois cronogramas para gerar um novo:
-
-- **Versão Simples**: Cruzamento segmentado - alterna segmentos de aulas entre os pais
-
-  ```java
-  int tamanhoSegmento = Math.max(1, pai.getAulas().size() / 10);
-  // Alterna entre 10 segmentos dos pais
-  ```
-
-- **Versões Otimizadas**: Cruzamento de ponto único - divide o cromossomo em duas partes
-  ```java
-  int corte = random.nextInt(Math.min(pai1.getAulas().size(), pai2.getAulas().size()));
-  // Primeira parte do pai1, segunda parte do pai2
-  ```
-
-Em todas as versões, evitamos duplicação de disciplinas no filho resultante.
-
-#### Mutação
-
-A mutação introduz diversidade alterando aleatoriamente propriedades das aulas:
-
-```java
-// Exemplo de mutação
-if (random.nextBoolean()) {
-    aula.setSala(random.nextInt(NUM_SALAS));
-} else {
-    aula.setHorario(random.nextInt(NUM_HORARIOS));
-}
+```bash
+executar.bat
 ```
 
-Na versão otimizada, verificamos a disponibilidade do professor ao mutar para garantir soluções mais válidas.
+O cronograma otimizado será salvo no arquivo `cronograma_otimizado.txt`.
 
-#### Seleção por Torneio
+## Configuração
 
-Selecionamos indivíduos usando torneio, onde o melhor de K candidatos aleatórios é escolhido:
+Os parâmetros do algoritmo podem ser ajustados no arquivo `config.properties`, como:
 
-```java
-for (int i = 0; i < tamanhoTorneio; i++) {
-    Cromossomo candidato = populacao.get(random.nextInt(populacao.size()));
-    if (melhor == null || candidato.getFitness() > melhor.getFitness()) {
-        melhor = candidato;
-    }
-}
-```
+- Tamanho da população.
+- Taxa de mutação.
+- Número de gerações.
+- Configurações específicas do problema (número de disciplinas, professores, salas, etc.).
 
-## Exemplo Real: Agendamento de um Departamento Universitário
+## Contribuição
 
-Imagine um departamento de Ciência da Computação com:
+Sinta-se à vontade para contribuir com melhorias ou novas funcionalidades. Abra uma issue ou envie um pull request.
 
-- 150 disciplinas para agendar
-- 30 professores com especializações diferentes
-- 20 salas de aulas com capacidades variadas
-- 1000 alunos matriculados em múltiplas disciplinas
-- 50 horários disponíveis na semana
+## Licença
 
-Desafios:
-
-1. O Prof. Silva só pode dar aulas às segundas e quartas
-2. A Profa. Oliveira é especialista em IA e não pode lecionar Banco de Dados
-3. A disciplina de Programação Avançada precisa de um laboratório específico
-4. Alguns alunos fazem disciplinas de diferentes períodos
-5. As salas têm capacidades diferentes e algumas disciplinas são muito populares
-
-Manualmente, este cronograma levaria semanas para ser criado. Com nosso algoritmo:
-
-```
-$ java -cp bin src.AlgoritmoGeneticoMain
-🧬 ALGORITMO GENÉTICO PARA AGENDAMENTO UNIVERSITÁRIO
-===================================================
-Escolha a versão do algoritmo:
-1. Versão Simples (15 disciplinas)
-2. Versão Escalável (150 disciplinas)
-3. Versão Ultra Escalável (500 disciplinas)
-Opção: 2
-
-🎓 ALGORITMO GENÉTICO OTIMIZADO - AGENDAMENTO UNIVERSITÁRIO
-Versão Escalável para 100+ Disciplinas
-=========================================================
-🧬 Gerando população paralela...
-✅ 500 cromossomos criados em paralelo
-Geração   0 - Melhor: 0.82 | Pior: 0.21 | Diversidade: 0.612
-Geração  20 - Melhor: 0.87 | Pior: 0.45 | Diversidade: 0.421
-...
-Geração 180 - Melhor: 0.96 | Pior: 0.67 | Diversidade: 0.287
-Geração 199 - Melhor: 0.97 | Pior: 0.72 | Diversidade: 0.252
-
-🏆 MELHOR SOLUÇÃO ENCONTRADA:
-Fitness: 0.97
-Tempo de execução: 45.32 segundos
-Disciplinas alocadas: 148/150 (98.7%)
-```
-
-O algoritmo gera um cronograma de alta qualidade em menos de um minuto, com 98.7% das disciplinas alocadas e poucas violações de restrições.
-
-## Conclusão
-
-Este projeto demonstra como algoritmos genéticos podem resolver eficientemente problemas complexos de agendamento que seriam extremamente difíceis de solucionar manualmente ou com métodos tradicionais. As três versões oferecem flexibilidade para diferentes cenários, desde pequenos departamentos até grandes universidades.
+Este projeto está licenciado sob a [MIT License](LICENSE).
