@@ -28,7 +28,6 @@ import src.AlgoritmoGenetico.Cromossomo;
  * - Cache de resultados
  * - Elitismo adaptativo
  */
-@SuppressWarnings("java:S106") // Suprime avisos sobre System.out em projeto educacional
 public class AlgoritmoGenetico {
 
     // ========== CONFIGURAÇÕES ESCALÁVEIS ==========
@@ -40,11 +39,11 @@ public class AlgoritmoGenetico {
     static final int TOURNAMENT_SIZE = 5; // Tamanho do torneio para seleção
 
     // Configurações escaláveis do problema
-    static final int NUM_DISCIPLINAS = 150; // 🎯 ESCALADO PARA 150 DISCIPLINAS
-    static final int NUM_PROFESSORES = 30; // Mais professores necessários
-    static final int NUM_SALAS = 20; // Mais salas necessárias
-    static final int NUM_HORARIOS = 50; // 5 dias x 10 horários por dia
-    static final int NUM_ALUNOS = 1000; // Mais alunos
+    static final int NUM_DISCIPLINAS = 150; 
+    static final int NUM_PROFESSORES = 30; 
+    static final int NUM_SALAS = 20; 
+    static final int NUM_HORARIOS = 50; 
+    static final int NUM_ALUNOS = 1000;
 
     // ========== PARALELIZAÇÃO ==========
     static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
@@ -174,7 +173,7 @@ public class AlgoritmoGenetico {
 
     // ----- FUNÇÃO DE FITNESS -----
     static double calcularFitness(Cromossomo cromossomo) {
-        // Fitness normalizado para variar entre 0 e 1
+        // Fitness para variar entre 0 e 1
 
         // 1. QUALIDADE DE ALOJAMENTO (40% do fitness)
         double qualidadeAlojamento = (double) cromossomo.getAulas().size() / NUM_DISCIPLINAS;
