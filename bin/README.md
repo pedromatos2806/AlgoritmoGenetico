@@ -1,20 +1,20 @@
 # Algoritmo Genético para Agendamento Universitário
 
-## Estrutura do Projeto
+## Versão do Algoritmo
 
-### Classes Principais
+**Versão Escalável**: Otimizada para 100-150 disciplinas, com paralelização.
 
-1. **AlgoritmoGenetico**: Contém as três versões do algoritmo genético.
-   - `mainSimples()`: Versão para 15 disciplinas
-   - `mainCem()`: Versão para 150 disciplinas
-   - `mainQuinhentas()`: Versão para 500 disciplinas
-2. **AlgoritmoGeneticoMain**: Classe principal para escolher qual versão executar.
-3. **ConfigSimples**, **Config100**, **Config500**: Configurações específicas para cada versão.
-4. **DadosProblema**: Define os dados do problema, como disciplinas e professores.
-5. **DisponibilidadeProfessor**: Gerencia a disponibilidade dos professores.
-6. **AlunosPorDisciplina**: Gerencia os alunos matriculados em cada disciplina.
-7. **Cromossomo**: Representa uma solução (cronograma).
-8. **Aula**: Representa uma aula específica.
+## Como Executar
+
+1. Compile o projeto:
+   ```bash
+   javac -d bin src/src/*.java
+   ```
+2. Execute a classe principal:
+   ```bash
+   java -cp bin src.AlgoritmoGeneticoMain
+   ```
+3. **Aula**: Representa uma aula específica.
 
 ### Versões do Algoritmo
 

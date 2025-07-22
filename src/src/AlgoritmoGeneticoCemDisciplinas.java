@@ -446,11 +446,6 @@ public class AlgoritmoGeneticoCemDisciplinas {
                     double diversidade = melhorFitness - piorFitness;
                     System.out.printf("Geração %3d - Melhor: %.2f | Pior: %.2f | Diversidade: %.3f%n",
                             geracao, melhorFitness, piorFitness, diversidade);
-
-                    // Alerta para convergência prematura
-                    if (diversidade < 0.01 && geracao < GERACOES * 0.5) {
-                        System.out.println("  ⚠️ ALERTA: Convergência prematura detectada!");
-                    }
                 }
             }
 

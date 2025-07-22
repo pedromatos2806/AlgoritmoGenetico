@@ -1,6 +1,6 @@
 # Algoritmo Genético para Agendamento Universitário
 
-Este projeto implementa um algoritmo genético para resolver o complexo problema de agendamento de aulas universitárias. O sistema é capaz de gerar cronogramas otimizados considerando restrições como disponibilidade de professores, capacidade das salas, preferências dos alunos e evitando conflitos de horários.
+Este projeto implementa um algoritmo genético para resolver o problema de agendamento de aulas universitárias com 100-150 disciplinas. O sistema utiliza paralelização e heurísticas avançadas para gerar cronogramas otimizados.
 
 ## O Problema Real
 
