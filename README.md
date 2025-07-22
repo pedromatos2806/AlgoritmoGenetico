@@ -17,14 +17,54 @@ Este projeto implementa um algoritmo genético para otimizar cronogramas de aula
 
 ## Funcionamento do Algoritmo Genético
 
-### Passos Principais
+### População e Gerações
 
-1. **Inicialização**: Geração de uma população inicial de cromossomos (soluções).
-2. **Avaliação (Fitness)**: Cada cromossomo é avaliado com base em uma função de fitness que mede a qualidade do cronograma.
-3. **Seleção**: Cromossomos com melhor fitness são selecionados para reprodução.
-4. **Cruzamento (Crossover)**: Combinação de cromossomos selecionados para gerar novos cromossomos.
-5. **Mutação**: Alteração aleatória em cromossomos para introduzir diversidade.
-6. **Iteração**: Repetição dos passos até atingir um critério de parada (número de gerações ou fitness satisfatório).
+#### População
+
+A população representa um conjunto de 500 soluções diferentes (cromossomos) para o problema de agendamento. Cada cromossomo é uma tentativa diferente de organizar as 150 disciplinas, considerando:
+
+- **Estrutura do Cromossomo**:
+
+  - Lista de aulas alocadas
+  - Cada aula contém: disciplina, professor, sala e horário
+  - Busca alocar o máximo possível das 150 disciplinas
+
+- **Características**:
+  - Tamanho fixo de 500 soluções
+  - Geração inicial aleatória mas respeitando restrições básicas
+  - Cada solução é única e independente
+
+#### Evolução das Gerações
+
+O algoritmo executa 200 gerações para melhorar as soluções progressivamente:
+
+1. **Avaliação**: Cálculo do fitness de cada solução
+
+   - Qualidade de alojamento (40%)
+   - Qualidade de distribuição (30%)
+   - Penalizações por conflitos (30%)
+
+2. **Seleção e Reprodução**:
+
+   - **Elitismo**: 50 melhores soluções são preservadas
+   - **Torneio**: Seleção de pais por competição entre 5 candidatos
+   - **Cruzamento**: 85% de chance de combinar soluções
+   - **Mutação**: 35% de chance de pequenas alterações
+
+3. **Processo de Melhoria**:
+   - Preservação das melhores características
+   - Exploração de novas combinações
+   - Adaptação gradual da população
+   - Monitoramento a cada 10 gerações
+
+### Passos do Algoritmo
+
+1. **Inicialização**: Geração de uma população inicial de 500 cromossomos
+2. **Avaliação (Fitness)**: Cálculo da qualidade de cada solução
+3. **Seleção**: Escolha dos melhores cromossomos para reprodução
+4. **Cruzamento (Crossover)**: Combinação de soluções para gerar novos cromossomos
+5. **Mutação**: Alterações aleatórias para manter diversidade
+6. **Iteração**: Repetição por 200 gerações ou até atingir qualidade satisfatória
 
 ### Cálculo do Fitness
 
