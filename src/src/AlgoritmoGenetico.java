@@ -30,7 +30,7 @@ import src.AlgoritmoGenetico.Cromossomo;
  */
 public class AlgoritmoGenetico {
 
-    // ========== CONFIGURAÇÕES ESCALÁVEIS ==========
+    // ----- CONFIGURAÇÕES -----
     static final int POPULACAO = 500; // Maior população para maior diversidade
     static final int GERACOES = 200; // Mais gerações para convergência
     static final double TAXA_MUTACAO = 0.05; // Taxa menor para preservar boas soluções
@@ -38,22 +38,22 @@ public class AlgoritmoGenetico {
     static final int ELITE_SIZE = 50; // Número de melhores preservados
     static final int TOURNAMENT_SIZE = 5; // Tamanho do torneio para seleção
 
-    // Configurações escaláveis do problema
+    // Configurações do problema
     static final int NUM_DISCIPLINAS = 150; 
     static final int NUM_PROFESSORES = 30; 
     static final int NUM_SALAS = 20; 
     static final int NUM_HORARIOS = 50; 
     static final int NUM_ALUNOS = 1000;
 
-    // ========== PARALELIZAÇÃO ==========
+    //---------- PARALELIZAÇÃO ----------
     static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
     static final ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 
-    // ========== CACHE ==========
+    //----- CACHE -----
     static final Map<String, Double> fitnessCache = new ConcurrentHashMap<>();
     static final Random random = ThreadLocalRandom.current();
 
-    // ========== DADOS ESCALÁVEIS ==========
+    // ----- DADOS -----
     static String[] nomesDisciplinas;
     static String[] nomesProfessores;
     static boolean[][] disponibilidadeProfessor;
@@ -63,11 +63,11 @@ public class AlgoritmoGenetico {
 
     // ----- INICIALIZAÇÃO -----
     static {
-        initializarDadosEscalaveis();
+        initializarDados();
     }
 
-    static void initializarDadosEscalaveis() {
-        System.out.println("🚀 Inicializando dados escaláveis...");
+    static void initializarDados() {
+        System.out.println("🚀 Inicializando dados ...");
 
         // Gerar nomes de disciplinas automaticamente
         nomesDisciplinas = new String[NUM_DISCIPLINAS];
@@ -122,7 +122,7 @@ public class AlgoritmoGenetico {
             alunosPorDisciplina.add(alunos);
         }
 
-        System.out.println("✅ Dados escaláveis inicializados!");
+        System.out.println("✅ Dados inicializados!");
         System.out.printf("📊 %d disciplinas, %d professores, %d salas, %d horários%n",
                 NUM_DISCIPLINAS, NUM_PROFESSORES, NUM_SALAS, NUM_HORARIOS);
     }
@@ -259,8 +259,8 @@ public class AlgoritmoGenetico {
     }
 
     // ----- GERAÇÃO PARALELA DE POPULAÇÃO -----
-    static List<Cromossomo> gerarPopulacaoParalela() {
-        System.out.println("🧬 Gerando população paralela...");
+    static List<Cromossomo> gerarPopulacao() {
+        System.out.println("🧬 Gerando população ...");
 
         List<CompletableFuture<Cromossomo>> futures = new ArrayList<>();
 
@@ -316,9 +316,9 @@ public class AlgoritmoGenetico {
         return new Cromossomo(aulas);
     }
 
-    // ----- EVOLUÇÃO PARALELA -----
-    static List<Cromossomo> evoluirPopulacaoParalela(List<Cromossomo> populacao) {
-        // Calcular fitness em paralelo
+    // ----- EVOLUÇÃO -----
+    static List<Cromossomo> evoluirPopulacao(List<Cromossomo> populacao) {
+        // Calcular fitness
         populacao.parallelStream().forEach(Cromossomo::getFitness);
 
         // Ordenar por fitness
@@ -427,23 +427,22 @@ public class AlgoritmoGenetico {
         long startTime = System.currentTimeMillis();
 
         System.out.println("🎓 ALGORITMO GENÉTICO - AGENDAMENTO UNIVERSITÁRIO");
-        System.out.println("Versão Escalável para 100+ Disciplinas");
+        System.out.println("Versão para 100+ Disciplinas");
         System.out.println("=========================================================");
 
         try {
             // Gerar população inicial
-            List<Cromossomo> populacao = gerarPopulacaoParalela();
+            List<Cromossomo> populacao = gerarPopulacao();
 
             // Evolução
             for (int geracao = 0; geracao < GERACOES; geracao++) {
-                populacao = evoluirPopulacaoParalela(populacao);
+                populacao = evoluirPopulacao(populacao);
 
                 if (geracao % 20 == 0 || geracao == GERACOES - 1) {
                     double melhorFitness = populacao.get(0).getFitness();
                     double piorFitness = populacao.get(populacao.size() - 1).getFitness();
                     double diversidade = melhorFitness - piorFitness;
-                    System.out.printf("Geração %3d - Melhor: %.2f | Pior: %.2f | Diversidade: %.3f%n",
-                            geracao, melhorFitness, piorFitness, diversidade);
+                    System.out.printf("Geração %3d - Melhor: %.2f | Pior: %.2f | Diversidade: %.3f%n", geracao, melhorFitness, piorFitness, diversidade);
                 }
             }
 
@@ -469,7 +468,7 @@ public class AlgoritmoGenetico {
     static void salvarCronograma(Cromossomo cromossomo) {
         try (PrintWriter writer = new PrintWriter("cronograma.txt")) {
             writer.println("CRONOGRAMA UNIVERSITÁRIO - EDUCAÇÃO AVANÇADA");
-            writer.println("Gerado por Algoritmo Genético Escalável");
+            writer.println("Gerado por Algoritmo Genético");
             writer.println("=====================================================");
             writer.println();
 
