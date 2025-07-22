@@ -105,44 +105,45 @@ Um cromossomo representa uma solução para o problema de agendamento. Ele é co
 
 ### Passo a Passo
 
-1. **Inicialização dos Dados**
+#### Inicialização dos Dados
 
-   - O método `initializarDados` é chamado para configurar os dados do problema, como disciplinas, professores, salas e horários.
-   - Os dados são gerados automaticamente com base nas configurações definidas no arquivo `config.properties`.
+O método `initializarDadosEscalaveis` é chamado para configurar os dados do problema, como disciplinas, professores, salas e horários.
+Os dados são gerados automaticamente com base nas configurações definidas no arquivo `config.properties`.
 
-2. **Geração da População Inicial**
+#### Geração da População Inicial
 
-   - Uma população inicial de cromossomos é criada. Cada cromossomo representa uma solução para o cronograma.
-   - Os cromossomos são gerados aleatoriamente para garantir diversidade.
+Uma população inicial de cromossomos é criada. Cada cromossomo representa uma solução para o cronograma.
+Os cromossomos são gerados aleatoriamente para garantir diversidade.
 
-3. **Avaliação de Fitness**
+#### Avaliação de Fitness
 
-   - Cada cromossomo é avaliado usando a função de fitness.
-   - O fitness mede a qualidade do cronograma com base em critérios como redução de conflitos, distribuição equilibrada e preferências de professores.
+Cada cromossomo é avaliado usando o método `calcularFitness`.
+O fitness mede a qualidade do cronograma com base em critérios como redução de conflitos, distribuição equilibrada e preferências de professores.
 
-4. **Seleção**
+#### Seleção
 
-   - Os melhores cromossomos são selecionados para reprodução usando o método de torneio.
-   - A seleção garante que as melhores soluções sejam preservadas.
+Os melhores cromossomos são selecionados para reprodução usando o método de torneio.
+A seleção garante que as melhores soluções sejam preservadas.
 
-5. **Cruzamento (Crossover)**
+#### Cruzamento (Crossover)
 
-   - Cromossomos selecionados são combinados para gerar novos cromossomos.
-   - O método `cruzar` realiza o cruzamento, dividindo os cromossomos em segmentos e combinando-os.
+Cromossomos selecionados são combinados para gerar novos cromossomos.
+O método `cruzarOtimizado` realiza o cruzamento, dividindo os cromossomos em segmentos e combinando-os.
 
-6. **Mutação**
+#### Mutação
 
-   - Alterações aleatórias são aplicadas aos cromossomos para introduzir diversidade.
-   - O método `fazerMutacao` realiza a mutação, modificando genes como horários ou professores.
+Alterações aleatórias são aplicadas aos cromossomos para introduzir diversidade.
+O método `mutarOtimizado` realiza a mutação, modificando genes como horários ou professores.
 
-7. **Iteração**
+#### Iteração
 
-   - Os passos de avaliação, seleção, cruzamento e mutação são repetidos por várias gerações.
-   - O número de gerações é definido no arquivo `config.properties`.
+Os passos de avaliação, seleção, cruzamento e mutação são repetidos por várias gerações.
+O número de gerações é definido no arquivo `config.properties`.
 
-8. **Salvar Cronograma Otimizado**
-   - O melhor cromossomo da última geração é salvo como o cronograma otimizado.
-   - O método `salvarCronograma` escreve o cronograma em um arquivo de texto, detalhando as aulas por dia e horário.
+#### Salvar Cronograma Otimizado
+
+O melhor cromossomo da última geração é salvo como o cronograma otimizado.
+O método `salvarCronogramaOtimizado` escreve o cronograma em um arquivo de texto, detalhando as aulas por dia e horário.
 
 ### Observação
 
