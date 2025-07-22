@@ -78,8 +78,8 @@ public class AlgoritmoGenetico {
                 if (geracao % 20 == 0 || geracao == GERACOES - 1) {
                     double melhorFitness = populacao.get(0).getFitness();
                     double piorFitness = populacao.get(populacao.size() - 1).getFitness();
-                    double diversidade = melhorFitness - piorFitness;
-                    System.out.printf("Geração %3d - Melhor: %.2f | Pior: %.2f%n", geracao, melhorFitness, piorFitness);
+                    double diversidadeDoFitness = melhorFitness - piorFitness;
+                    System.out.printf("Geração %3d - Melhor: %.2f | Pior: %.2f | Diversidade do Fitness: %.2f%n", geracao, melhorFitness, piorFitness, diversidadeDoFitness);
                 }
             }
 
