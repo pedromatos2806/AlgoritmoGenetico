@@ -17,12 +17,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import src.AlgoritmoGenetico.Cromossomo;
-
 /**
  * Algoritmo Genético para Agendamento Universitário
  * 
- * OTIMIZAÇÕES PARA 100+ DISCIPLINAS:
+ * PARA 150 DISCIPLINAS:
  * - Paralelização usando threads
  * - Algoritmos de fitness
  * - Cache de resultados
@@ -33,23 +31,23 @@ public class AlgoritmoGenetico {
     // ----- CONFIGURAÇÕES -----
     static final int POPULACAO = 500; // Maior população para maior diversidade
     static final int GERACOES = 200; // Mais gerações para convergência
-    static final double TAXA_MUTACAO = 0.15; // Taxa menor para preservar boas soluções
+    static final double TAXA_MUTACAO = 0.35;
     static final double TAXA_CRUZAMENTO = 0.85; // Taxa maior para exploração
     static final int ELITE_SIZE = 50; // Número de melhores preservados
     static final int TOURNAMENT_SIZE = 5; // Tamanho do torneio para seleção
 
     // Configurações do problema
-    static final int NUM_DISCIPLINAS = 150; 
-    static final int NUM_PROFESSORES = 30; 
-    static final int NUM_SALAS = 20; 
-    static final int NUM_HORARIOS = 50; 
+    static final int NUM_DISCIPLINAS = 150;
+    static final int NUM_PROFESSORES = 30;
+    static final int NUM_SALAS = 20;
+    static final int NUM_HORARIOS = 50;
     static final int NUM_ALUNOS = 1000;
 
-    //---------- PARALELIZAÇÃO ----------
+    // ---------- PARALELIZAÇÃO ----------
     static final int NUM_THREADS = Runtime.getRuntime().availableProcessors();
     static final ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 
-    //----- CACHE -----
+    // ----- CACHE -----
     static final Map<String, Double> fitnessCache = new ConcurrentHashMap<>();
     static final Random random = ThreadLocalRandom.current();
 
@@ -61,9 +59,7 @@ public class AlgoritmoGenetico {
     static int[] capacidadeSalas;
     static List<Set<Integer>> alunosPorDisciplina;
 
-    
-    
- // ----- ALGORITMO PRINCIPAL -----
+    // ----- ALGORITMO PRINCIPAL -----
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
 
@@ -83,7 +79,7 @@ public class AlgoritmoGenetico {
                     double melhorFitness = populacao.get(0).getFitness();
                     double piorFitness = populacao.get(populacao.size() - 1).getFitness();
                     double diversidade = melhorFitness - piorFitness;
-                    System.out.printf("Geração %3d - Melhor: %.2f | Pior: %.2f%n", geracao, melhorFitness, piorFitness, diversidade);
+                    System.out.printf("Geração %3d - Melhor: %.2f | Pior: %.2f%n", geracao, melhorFitness, piorFitness);
                 }
             }
 
@@ -140,14 +136,13 @@ public class AlgoritmoGenetico {
                 }
             }
 
-            System.out.println("💾 Cronograma salvo em 'cronograma.txt ' com sucesso!\nPor PEDRO MATOS");
+            System.out.println("💾 Cronograma salvo em 'cronograma.txt' com sucesso por Pedro Matos!");
 
         } catch (IOException e) {
             System.err.println("Erro ao salvar arquivo: " + e.getMessage());
         }
     }
-    
-    
+
     // ----- INICIALIZAÇÃO -----
     static {
         initializarDados();
@@ -214,7 +209,7 @@ public class AlgoritmoGenetico {
                 NUM_DISCIPLINAS, NUM_PROFESSORES, NUM_SALAS, NUM_HORARIOS);
     }
 
-    //---------- CLASSE PARA CROMOSSOMO -----
+    // ---------- CLASSE PARA CROMOSSOMO -----
     static class Cromossomo {
         private final List<Aula> aulas;
         private Double fitness;
@@ -259,6 +254,7 @@ public class AlgoritmoGenetico {
     }
 
     // ----- FUNÇÃO DE FITNESS -----
+    @SuppressWarnings("unchecked")
     static double calcularFitness(Cromossomo cromossomo) {
         // Fitness para variar entre 0 e 1
 
@@ -508,6 +504,5 @@ public class AlgoritmoGenetico {
         mutado.invalidarFitness();
         return mutado;
     }
-
 
 }
