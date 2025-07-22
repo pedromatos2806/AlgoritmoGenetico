@@ -256,7 +256,7 @@ public class AlgoritmoGenetico {
     // ----- FUNÇÃO DE FITNESS -----
     @SuppressWarnings("unchecked")
     static double calcularFitness(Cromossomo cromossomo) {
-        // Fitness para variar entre 0 e 1
+        // TODO: Coloquei o Fitness para variar entre 0 e 1
 
         // 1. QUALIDADE DE ALOJAMENTO (40% do fitness)
         double qualidadeAlojamento = (double) cromossomo.getAulas().size() / NUM_DISCIPLINAS;
