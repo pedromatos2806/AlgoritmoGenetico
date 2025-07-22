@@ -75,7 +75,7 @@ public class AlgoritmoGenetico {
             for (int geracao = 0; geracao < GERACOES; geracao++) {
                 populacao = evoluirPopulacao(populacao);
 
-                if (geracao % 20 == 0 || geracao == GERACOES - 1) {
+                if (geracao % 10 == 0 || geracao == GERACOES - 1) {
                     double melhorFitness = populacao.get(0).getFitness();
                     double piorFitness = populacao.get(populacao.size() - 1).getFitness();
                     double diversidadeDoFitness = melhorFitness - piorFitness;
