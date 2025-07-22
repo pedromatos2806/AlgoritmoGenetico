@@ -105,7 +105,7 @@ public class AlgoritmoGenetico {
     static void salvarCronograma(Cromossomo cromossomo) {
         try (PrintWriter writer = new PrintWriter("cronograma.txt")) {
             writer.println("CRONOGRAMA UNIVERSITÁRIO - EDUCAÇÃO AVANÇADA");
-            writer.println("Gerado por Algoritmo Genético");
+            writer.println("Gerado pelo Algoritmo Genético de Pedro Matos");
             writer.println("=====================================================");
             writer.println();
 
