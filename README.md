@@ -40,6 +40,27 @@ A função de fitness utiliza componentes ponderados, como:
 - **Distribuição**: 30% do fitness.
 - **Qualidade**: 30% do fitness.
 
+## Detalhes do Algoritmo
+
+### Fitness
+
+A função de fitness avalia a qualidade do cronograma com base nos seguintes critérios:
+
+- **Redução de Conflitos**: Evitar que professores ou alunos tenham horários conflitantes.
+- **Distribuição Equilibrada**: Garantir que as aulas sejam distribuídas de forma eficiente ao longo da semana.
+- **Preferências de Professores**: Respeitar a disponibilidade dos professores.
+- **Capacidade das Salas**: Garantir que o número de alunos não exceda a capacidade das salas.
+- **Qualidade Geral**: Considerar a satisfação geral dos critérios acima.
+
+Os valores de fitness são normalizados entre 0 e 1 para facilitar a comparação entre soluções.
+
+### Cromossomos e Cortes
+
+Um cromossomo representa uma solução completa para o cronograma. Ele é composto por múltiplos genes, onde cada gene representa uma aula específica (disciplina, professor, sala e horário).
+
+- **Número de Genes**: Cada cromossomo contém um total de 150 genes, correspondendo ao número de disciplinas.
+- **Cortes no Cromossomo**: Durante o cruzamento, são realizados dois cortes no cromossomo para dividir os genes em segmentos. Esses cortes permitem combinar partes de dois cromossomos diferentes, gerando novos cromossomos com características mistas.
+
 ### Mutação
 
 A mutação é realizada alterando aleatoriamente atributos de um cromossomo, como:
